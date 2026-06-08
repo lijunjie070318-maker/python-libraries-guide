@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>初学者：在 VSCode 中创建路由页面</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #21262d;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text2: #8b949e;
+      --blue: #58a6ff;
+      --green: #3fb950;
+      --orange: #d29922;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --cyan: #79c0ff;
+      --yellow: #e3b341;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ─── 顶部 Hero ─── */
+    .hero {
+      background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 50%, #0d1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 50px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, rgba(88,166,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(88,166,255,0.1);
+      border: 1px solid rgba(88,166,255,0.3);
+      color: var(--blue);
+      font-size: 12px;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+    }
+    .hero h1 {
+      font-size: clamp(26px, 4vw, 42px);
+      font-weight: 700;
+      margin-bottom: 14px;
+      background: linear-gradient(90deg, #58a6ff, #79c0ff, #bc8cff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      color: var(--text2);
+      font-size: 15px;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* ─── 布局 ─── */
+    .layout {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      gap: 30px;
+    }
+
+    /* ─── 侧边导航 ─── */
+    .sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 20px;
+      height: fit-content;
+    }
+    .sidebar-title {
+      font-size: 11px;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 10px;
+      padding-left: 10px;
+    }
+    .sidebar ul { list-style: none; }
+    .sidebar li a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 13px;
+      transition: all 0.2s;
+      border-left: 2px solid transparent;
+    }
+    .sidebar li a:hover,
+    .sidebar li a.active {
+      color: var(--blue);
+      background: rgba(88,166,255,0.07);
+      border-left-color: var(--blue);
+    }
+    .sidebar li a .num {
+      width: 20px; height: 20px;
+      background: var(--bg3);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    /* ─── 主内容 ─── */
+    .main { flex: 1; min-width: 0; }
+
+    /* ─── Section ─── */
+    .section {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 24px;
+      scroll-margin-top: 20px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .step-circle {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 16px;
+      flex-shrink: 0;
+    }
+    .step-circle.blue   { background: rgba(88,166,255,0.15); color: var(--blue); border: 1.5px solid rgba(88,166,255,0.4); }
+    .step-circle.green  { background: rgba(63,185,80,0.15);  color: var(--green); border: 1.5px solid rgba(63,185,80,0.4); }
+    .step-circle.orange { background: rgba(210,153,34,0.15); color: var(--orange); border: 1.5px solid rgba(210,153,34,0.4); }
+    .step-circle.purple { background: rgba(188,140,255,0.15);color: var(--purple); border: 1.5px solid rgba(188,140,255,0.4); }
+    .step-circle.cyan   { background: rgba(121,192,255,0.15);color: var(--cyan); border: 1.5px solid rgba(121,192,255,0.4); }
+    .step-circle.red    { background: rgba(248,81,73,0.15);  color: var(--red); border: 1.5px solid rgba(248,81,73,0.4); }
+    .step-circle.yellow { background: rgba(227,179,65,0.15); color: var(--yellow); border: 1.5px solid rgba(227,179,65,0.4); }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .section-subtitle {
+      font-size: 12px;
+      color: var(--text2);
+      margin-top: 2px;
+    }
+
+    /* ─── 代码块 ─── */
+    .code-wrap {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 14px 0;
+    }
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+    .code-filename {
+      font-size: 12px;
+      color: var(--text2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .code-filename .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .dot-vue    { background: #42b883; }
+    .dot-js     { background: #f7df1e; }
+    .dot-bash   { background: #79c0ff; }
+    .dot-html   { background: #e96900; }
+    pre {
+      padding: 16px 20px;
+      font-family: 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .c-kw   { color: #ff7b72; }  /* 关键字 keyword */
+    .c-fn   { color: #d2a8ff; }  /* 函数 */
+    .c-str  { color: #a5d6ff; }  /* 字符串 */
+    .c-cmt  { color: #8b949e; font-style: italic; } /* 注释 */
+    .c-tag  { color: #7ee787; }  /* HTML标签 */
+    .c-attr { color: #79c0ff; }  /* 属性 */
+    .c-val  { color: #a5d6ff; }  /* 属性值 */
+    .c-path { color: #ffa657; }  /* 路径 */
+    .c-var  { color: #ffa657; }  /* 变量 */
+    .c-num  { color: #79c0ff; }  /* 数字 */
+    .hl-line {
+      display: block;
+      background: rgba(88,166,255,0.08);
+      border-left: 3px solid var(--blue);
+      padding-left: 17px !important;
+      margin-left: -20px;
+      padding-right: 20px;
+    }
+
+    /* ─── 注释气泡（行内标注） ─── */
+    .anno {
+      display: inline-block;
+      margin-left: 8px;
+      background: rgba(88,166,255,0.12);
+      border: 1px solid rgba(88,166,255,0.25);
+      color: var(--blue);
+      font-size: 11px;
+      padding: 1px 8px;
+      border-radius: 10px;
+      font-style: normal;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+    .anno.green  { background: rgba(63,185,80,0.12);  border-color: rgba(63,185,80,0.3);  color: var(--green); }
+    .anno.orange { background: rgba(210,153,34,0.12); border-color: rgba(210,153,34,0.3); color: var(--orange); }
+    .anno.purple { background: rgba(188,140,255,0.12);border-color: rgba(188,140,255,0.3);color: var(--purple); }
+    .anno.red    { background: rgba(248,81,73,0.12);  border-color: rgba(248,81,73,0.3);  color: var(--red); }
+
+    /* ─── 提示框 ─── */
+    .tip, .warn, .info, .danger {
+      display: flex;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin: 14px 0;
+      font-size: 14px;
+      align-items: flex-start;
+    }
+    .tip    { background: rgba(63,185,80,0.08);  border: 1px solid rgba(63,185,80,0.3);  color: #7ee787; }
+    .warn   { background: rgba(210,153,34,0.08); border: 1px solid rgba(210,153,34,0.3); color: var(--yellow); }
+    .info   { background: rgba(88,166,255,0.08); border: 1px solid rgba(88,166,255,0.3); color: var(--blue); }
+    .danger { background: rgba(248,81,73,0.08);  border: 1px solid rgba(248,81,73,0.3);  color: var(--red); }
+    .tip .icon, .warn .icon, .info .icon, .danger .icon {
+      font-size: 18px; flex-shrink: 0; margin-top: 1px;
+    }
+    .tip p, .warn p, .info p, .danger p { color: var(--text); margin: 0; }
+    .tip strong, .warn strong, .info strong, .danger strong { display: block; margin-bottom: 3px; }
+
+    /* ─── 文件树 ─── */
+    .file-tree {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-family: 'Fira Code', Consolas, monospace;
+      font-size: 13px;
+      margin: 14px 0;
+    }
+    .file-tree .dir { color: var(--blue); }
+    .file-tree .file { color: var(--text2); }
+    .file-tree .highlight { color: var(--green); font-weight: bold; }
+    .file-tree .new::after {
+      content: ' ← 新建';
+      color: var(--green);
+      font-size: 11px;
+    }
+    .file-tree .modify::after {
+      content: ' ← 修改';
+      color: var(--orange);
+      font-size: 11px;
+    }
+
+    /* ─── 步骤流程图 ─── */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 16px 0;
+    }
+    .flow-item {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 13px;
+      text-align: center;
+    }
+    .flow-item .fi-num { color: var(--text2); font-size: 11px; }
+    .flow-item .fi-text { color: var(--text); font-weight: 500; margin-top: 2px; }
+    .flow-arrow {
+      color: var(--text2);
+      font-size: 18px;
+      padding: 0 6px;
+      flex-shrink: 0;
+    }
+
+    /* ─── 对比表格 ─── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      margin: 14px 0;
+    }
+    th {
+      background: var(--bg3);
+      color: var(--text2);
+      font-weight: 600;
+      padding: 10px 14px;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    td {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+    .td-good { color: var(--green); }
+    .td-bad  { color: var(--red); }
+    code.inline {
+      background: var(--bg3);
+      color: var(--cyan);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: 'Fira Code', Consolas, monospace;
+      font-size: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ─── 注意事项卡片 ─── */
+    .notice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .notice-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .notice-card .nc-icon { font-size: 24px; margin-bottom: 10px; }
+    .notice-card .nc-title { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+    .notice-card .nc-body { font-size: 13px; color: var(--text2); line-height: 1.6; }
+    .notice-card.nc-red    { border-color: rgba(248,81,73,0.3);   }
+    .notice-card.nc-orange { border-color: rgba(210,153,34,0.3);  }
+    .notice-card.nc-blue   { border-color: rgba(88,166,255,0.3);  }
+    .notice-card.nc-green  { border-color: rgba(63,185,80,0.3);   }
+    .notice-card.nc-purple { border-color: rgba(188,140,255,0.3); }
+    .notice-card.nc-cyan   { border-color: rgba(121,192,255,0.3); }
+
+    /* ─── 总结 ─── */
+    .summary-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .sum-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .sum-step:last-child { border-bottom: none; }
+    .sum-dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .sum-content { flex: 1; }
+    .sum-content strong { font-size: 14px; display: block; margin-bottom: 3px; }
+    .sum-content span { font-size: 13px; color: var(--text2); }
+
+    /* ─── 底部 ─── */
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text2);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─── 滚动高亮 ─── */
+    html { scroll-behavior: smooth; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .layout { padding: 20px 14px; }
+      .section { padding: 20px 16px; }
+      .flow { gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">🌱 前端初学者指南</div>
+  <h1>在 VSCode 中创建路由页面</h1>
+  <p>从零开始，一步步在 Vue 3 项目里添加一个完整的路由页面，含步骤详解 + 常见注意事项</p>
+</div>
+
+<!-- 主布局 -->
+<div class="layout">
+
+  <!-- 左侧导航 -->
+  <nav class="sidebar">
+    <div class="sidebar-title">目录</div>
+    <ul>
+      <li><a href="#s0"><span class="num">0</span> 预备知识</a></li>
+      <li><a href="#s1"><span class="num">1</span> 创建项目</a></li>
+      <li><a href="#s2"><span class="num">2</span> 安装 Vue Router</a></li>
+      <li><a href="#s3"><span class="num">3</span> 新建页面文件</a></li>
+      <li><a href="#s4"><span class="num">4</span> 注册路由</a></li>
+      <li><a href="#s5"><span class="num">5</span> 配置导航</a></li>
+      <li><a href="#s6"><span class="num">6</span> 启动验证</a></li>
+      <li><a href="#notice">⚠ 注意事项</a></li>
+      <li><a href="#summary">📋 总结</a></li>
+    </ul>
+  </nav>
+
+  <!-- 右侧主内容 -->
+  <main class="main">
+
+    <!-- 整体流程 -->
+    <section class="section" style="background: linear-gradient(135deg, var(--bg2), #1a1f2e);">
+      <div class="section-header">
+        <div style="font-size:28px;">🗺️</div>
+        <div>
+          <div class="section-title">整体流程一览</div>
+          <div class="section-subtitle">按顺序完成以下 6 步，就能在浏览器里看到你的路由页面</div>
+        </div>
+      </div>
+      <div class="flow">
+        <div class="flow-item"><div class="fi-num">Step 0</div><div class="fi-text">📚 预备知识</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item"><div class="fi-num">Step 1</div><div class="fi-text">📦 创建项目</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item"><div class="fi-num">Step 2</div><div class="fi-text">⚙️ 安装路由</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item"><div class="fi-num">Step 3</div><div class="fi-text">📄 新建文件</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item"><div class="fi-num">Step 4</div><div class="fi-text">🔗 注册路由</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item"><div class="fi-num">Step 5</div><div class="fi-text">🧭 配置导航</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item"><div class="fi-num">Step 6</div><div class="fi-text">🚀 启动验证</div></div>
+      </div>
+    </section>
+
+    <!-- Step 0 预备知识 -->
+    <section class="section" id="s0">
+      <div class="section-header">
+        <div class="step-circle blue">0</div>
+        <div>
+          <div class="section-title">预备知识</div>
+          <div class="section-subtitle">开始之前，确认你已经安装了这些工具</div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>工具</th><th>作用</th><th>检查命令</th><th>状态</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Node.js</strong></td>
+            <td>前端项目的运行环境，必须安装</td>
+            <td><code class="inline">node -v</code></td>
+            <td class="td-good">✅ 先装这个</td>
+          </tr>
+          <tr>
+            <td><strong>npm / pnpm</strong></td>
+            <td>包管理器，用来安装各种依赖</td>
+            <td><code class="inline">npm -v</code></td>
+            <td class="td-good">✅ 随 Node 自带</td>
+          </tr>
+          <tr>
+            <td><strong>VSCode</strong></td>
+            <td>代码编辑器</td>
+            <td>直接打开即可</td>
+            <td class="td-good">✅ 必装</td>
+          </tr>
+          <tr>
+            <td><strong>Volar 插件</strong></td>
+            <td>VSCode 里识别 .vue 文件语法</td>
+            <td>扩展商店搜索 Vue - Official</td>
+            <td class="td-good">✅ 强烈推荐</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info">
+        <div class="icon">💡</div>
+        <p><strong>没有安装 Node.js？</strong>去官网 <code class="inline">nodejs.org</code> 下载 LTS 版本，安装后重启 VSCode，再在终端里输入 <code class="inline">node -v</code> 验证。</p>
+      </div>
+    </section>
+
+    <!-- Step 1 创建项目 -->
+    <section class="section" id="s1">
+      <div class="section-header">
+        <div class="step-circle green">1</div>
+        <div>
+          <div class="section-title">创建 Vite + Vue 3 项目</div>
+          <div class="section-subtitle">用脚手架快速生成项目骨架，不要从零手写</div>
+        </div>
+      </div>
+
+      <p style="margin-bottom:12px; font-size:14px; color:var(--text2);">打开 VSCode，按 <code class="inline">Ctrl + `</code> 打开终端，输入以下命令：</p>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-filename"><span class="dot dot-bash"></span> 终端（PowerShell / cmd）</div>
+        </div>
+        <pre><span class="c-cmt"># 1. 创建项目（my-router-app 是项目名，可以改）</span>
+npm create vite@latest my-router-app -- --template vue
+
+<span class="c-cmt"># 2. 进入项目目录</span>
+cd my-router-app
+
+<span class="c-cmt"># 3. 安装所有依赖</span>
+npm install</pre>
+      </div>
+
+      <div class="warn">
+        <div class="icon">⚠️</div>
+        <p><strong>注意：创建时选 Vue + JavaScript，不要选 TypeScript！</strong><br>初学者先学 JS 版本，TypeScript 等熟练后再切换。</p>
+      </div>
+
+      <p style="margin: 14px 0 8px; font-size:14px; color:var(--text2);">命令执行完毕后，项目结构如下：</p>
+      <div class="file-tree">
+        <span class="dir">my-router-app/</span><br>
+        &nbsp;&nbsp;├── <span class="dir">src/</span><br>
+        &nbsp;&nbsp;│   ├── <span class="file">App.vue</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">← 根组件</span><br>
+        &nbsp;&nbsp;│   ├── <span class="file">main.js</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">← 入口文件</span><br>
+        &nbsp;&nbsp;│   └── <span class="dir">components/</span><br>
+        &nbsp;&nbsp;├── <span class="file">index.html</span><br>
+        &nbsp;&nbsp;├── <span class="file">package.json</span><br>
+        &nbsp;&nbsp;└── <span class="file">vite.config.js</span>
+      </div>
+    </section>
+
+    <!-- Step 2 安装 Vue Router -->
+    <section class="section" id="s2">
+      <div class="section-header">
+        <div class="step-circle orange">2</div>
+        <div>
+          <div class="section-title">安装 Vue Router</div>
+          <div class="section-subtitle">Vite 默认不带路由，需要手动安装并配置</div>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-filename"><span class="dot dot-bash"></span> 终端</div>
+        </div>
+        <pre><span class="c-cmt"># 安装 vue-router</span>
+npm install vue-router</pre>
+      </div>
+
+      <p style="margin: 14px 0 10px; font-size: 14px; color: var(--text2);">安装完毕后，在 <code class="inline">src/</code> 下手动创建 <code class="inline">router/index.js</code> 文件：</p>
+
+      <div class="file-tree">
+        <span class="dir">src/</span><br>
+        &nbsp;&nbsp;├── <span class="dir">router/</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new" style="color:var(--green);font-size:11px">← 新建这个文件夹</span><br>
+        &nbsp;&nbsp;│   └── <span class="highlight">index.js</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new" style="color:var(--green);font-size:11px">← 新建这个文件</span><br>
+        &nbsp;&nbsp;├── <span class="dir">views/</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new" style="color:var(--green);font-size:11px">← 新建这个文件夹</span><br>
+        &nbsp;&nbsp;├── App.vue<br>
+        &nbsp;&nbsp;└── main.js
+      </div>
+
+      <p style="margin: 14px 0 8px; font-size: 14px;">写入 <code class="inline">router/index.js</code> 内容：</p>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-filename"><span class="dot dot-js"></span> src/router/index.js</div>
+        </div>
+        <pre><span class="c-kw">import</span> { createRouter, createWebHashHistory } <span class="c-kw">from</span> <span class="c-str">'vue-router'</span>
+
+<span class="c-kw">const</span> <span class="c-var">routes</span> = [
+  <span class="c-cmt">// 这里写路由规则，等 Step 4 再填</span>
+]
+
+<span class="c-kw">const</span> <span class="c-var">router</span> = createRouter({
+  history: <span class="c-fn">createWebHashHistory</span>(),   <span class="c-cmt">// 使用 Hash 模式（初学者用这个）</span>
+  routes,
+})
+
+<span class="c-kw">export default</span> router</pre>
+      </div>
+
+      <p style="margin: 14px 0 8px; font-size: 14px;">然后在 <code class="inline">main.js</code> 里引入并挂载路由：</p>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-filename"><span class="dot dot-js"></span> src/main.js</div>
+        </div>
+        <pre><span class="c-kw">import</span> { createApp } <span class="c-kw">from</span> <span class="c-str">'vue'</span>
+<span class="c-kw">import</span> App <span class="c-kw">from</span> <span class="c-str">'./App.vue'</span>
+<span class="c-kw">import</span> router <span class="c-kw">from</span> <span class="c-str">'./router/index.js'</span>  <span class="anno">新增这一行</span>
+
+<span class="c-fn">createApp</span>(App)
+  .use(router)       <span class="anno green">挂载路由，新增</span>
+  .mount(<span class="c-str">'#app'</span>)</pre>
+      </div>
+
+      <div class="tip">
+        <div class="icon">✅</div>
+        <p><strong>.use(router) 一定要加！</strong> 忘了这一行，路由不会生效，也不会报错，只是什么都不发生——这是初学者最常踩的坑之一。</p>
+      </div>
+    </section>
+
+    <!-- Step 3 新建页面文件 -->
+    <section class="section" id="s3">
+      <div class="section-header">
+        <div class="step-circle purple">3</div>
+        <div>
+          <div class="section-title">新建页面 .vue 文件</div>
+          <div class="section-subtitle">每个路由对应一个 .vue 文件，放在 src/views/ 目录下</div>
+        </div>
+      </div>
+
+      <p style="margin-bottom:12px;font-size:14px;color:var(--text2);">在 <code class="inline">src/views/</code> 目录下，右键 → 新建文件，创建以下两个文件：</p>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-filename"><span class="dot dot-vue"></span> src/views/HomeView.vue</div>
+        </div>
+        <pre><span class="c-tag">&lt;template&gt;</span>
+  <span class="c-tag">&lt;div&gt;</span>
+    <span class="c-tag">&lt;h1&gt;</span>🏠 首页<span class="c-tag">&lt;/h1&gt;</span>          <span class="anno">显示在网页上的内容</span>
+    <span class="c-tag">&lt;p&gt;</span>欢迎来到首页！<span class="c-tag">&lt;/p&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+<span class="c-tag">&lt;/template&gt;</span></pre>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-filename"><span class="dot dot-vue"></span> src/views/AboutView.vue</div>
+        </div>
+        <pre><span class="c-tag">&lt;template&gt;</span>
+  <span class="c-tag">&lt;div&gt;</span>
+    <span class="c-tag">&lt;h1&gt;</span>📖 关于我们<span class="c-tag">&lt;/h1&gt;</span>
+    <span class="c-tag">&lt;p&gt;</span>这是关于页面。<span class="c-tag">&lt;/p&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+<span class="c-tag">&lt;/template&gt;</span></pre>
+      </div>
+
+      <div class="warn">
+        <div class="icon">⚠️</div>
+        <p><strong>命名规范：</strong>页面组件文件名用大驼峰 <code class="inline">HomeView.vue</code>，不要用 <code class="inline">homeView.vue</code> 或 <code class="inline">home-view.vue</code>，保持统一风格，后面维护更方便。</p>
+      </div>
+    </section>
+
+    <!-- Step 4 注册路由 -->
+    <section class="section" id="s4">
+      <div class="section-header">
+        <div class="step-circle cyan">4</div>
+        <div>
+          <div class="section-title">在路由表里注册</div>
+          <div class="section-subtitle">告诉 Vue Router：访问哪个路径，显示哪个页面</div>
+        </div>
+      </div>
+
+      <p style="margin-bottom:12px;font-size:14px;color:var(--text2);">回到 <code class="inline">src/router/index.js</code>，填入路由规则：</p>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-filename"><span class="dot dot-js"></span> src/router/index.js（完整版）</div>
+        </div>
+        <pre><span class="c-kw">import</span> { createRouter, createWebHashHistory } <span class="c-kw">from</span> <span class="c-str">'vue-router'</span>
+<span class="c-cmt">// 静态导入（写在最顶部，一启动就加载）</span>
+<span class="c-kw">import</span> HomeView <span class="c-kw">from</span> <span class="c-str">'../views/HomeView.vue'</span>
+
+<span class="c-kw">const</span> <span class="c-var">routes</span> = [
+  {
+    path: <span class="c-str">'/'</span>,            <span class="anno">URL路径：根路径</span>
+    component: HomeView  <span class="anno green">对应组件：HomeView</span>
+  },
+  {
+    path: <span class="c-str">'/about'</span>,       <span class="anno">URL路径：/about</span>
+    <span class="c-cmt">// 动态导入（访问时才加载，推荐用法）</span>
+    component: () <span class="c-kw">=&gt;</span> <span class="c-kw">import</span>(<span class="c-str">'../views/AboutView.vue'</span>)  <span class="anno orange">懒加载</span>
+  },
+]
+
+<span class="c-kw">const</span> <span class="c-var">router</span> = createRouter({
+  history: <span class="c-fn">createWebHashHistory</span>(),
+  routes,
+})
+
+<span class="c-kw">export default</span> router</pre>
+      </div>
+
+      <div class="info">
+        <div class="icon">💡</div>
+        <p><strong>静态导入 vs 动态导入：</strong>核心页面（首页）用静态导入；不常用的页面用 <code class="inline">() =&gt; import(...)</code> 动态导入。动态导入能让首屏加载更快。</p>
+      </div>
+    </section>
+
+    <!-- Step 5 配置导航 -->
+    <section class="section" id="s5">
+      <div class="section-header">
+        <div class="step-circle red">5</div>
+        <div>
+          <div class="section-title">在 App.vue 里配置导航</div>
+          <div class="section-subtitle">加入 RouterLink（导航链接）和 RouterView（页面显示区域）</div>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-filename"><span class="dot dot-vue"></span> src/App.vue</div>
+        </div>
+        <pre><span class="c-tag">&lt;template&gt;</span>
+  <span class="c-tag">&lt;div&gt;</span>
+    <span class="c-cmt">&lt;!-- 导航栏：永远显示，不随页面切换消失 --&gt;</span>
+    <span class="c-tag">&lt;nav&gt;</span>
+      <span class="c-tag">&lt;RouterLink</span> <span class="c-attr">to</span>=<span class="c-val">"/"</span><span class="c-tag">&gt;</span>首页<span class="c-tag">&lt;/RouterLink&gt;</span>      <span class="anno">跳转根路径</span>
+      <span class="c-tag">&lt;RouterLink</span> <span class="c-attr">to</span>=<span class="c-val">"/about"</span><span class="c-tag">&gt;</span>关于<span class="c-tag">&lt;/RouterLink&gt;</span>  <span class="anno">跳转/about</span>
+    <span class="c-tag">&lt;/nav&gt;</span>
+
+    <span class="c-tag">&lt;hr /&gt;</span>
+
+    <span class="c-cmt">&lt;!-- 路由出口：当前页面的内容渲染在这里 --&gt;</span>
+    <span class="c-tag">&lt;RouterView</span> <span class="c-tag">/&gt;</span>   <span class="anno purple">页面内容显示在这里！</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+<span class="c-tag">&lt;/template&gt;</span></pre>
+      </div>
+
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin:14px 0;">
+        <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">这两个标签的作用：</p>
+        <table style="margin:0;">
+          <thead>
+            <tr><th>标签</th><th>作用</th><th>类比</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">&lt;RouterLink to="/xxx"&gt;</code></td>
+              <td>导航链接，点击后切换页面（不会整页刷新）</td>
+              <td>电视遥控器的频道按钮</td>
+            </tr>
+            <tr>
+              <td><code class="inline">&lt;RouterView /&gt;</code></td>
+              <td>页面内容的"占位符"，显示当前路由对应的组件</td>
+              <td>电视屏幕</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="danger">
+        <div class="icon">🚨</div>
+        <p><strong>不要用 <code class="inline">&lt;a href="/about"&gt;</code> 代替 RouterLink！</strong><br>普通的 <code class="inline">&lt;a&gt;</code> 标签会触发浏览器整页刷新，SPA 的意义就丧失了。必须用 <code class="inline">&lt;RouterLink&gt;</code>。</p>
+      </div>
+    </section>
+
+    <!-- Step 6 启动验证 -->
+    <section class="section" id="s6">
+      <div class="section-header">
+        <div class="step-circle yellow">6</div>
+        <div>
+          <div class="section-title">启动项目，在浏览器验证</div>
+          <div class="section-subtitle">最后一步！看看你的路由页面跑起来了吗</div>
+        </div>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-filename"><span class="dot dot-bash"></span> 终端</div>
+        </div>
+        <pre><span class="c-cmt"># 启动开发服务器</span>
+npm run dev</pre>
+      </div>
+
+      <p style="margin:12px 0 8px;font-size:14px;color:var(--text2);">终端里会显示：</p>
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-filename"><span class="dot dot-bash"></span> 终端输出</div>
+        </div>
+        <pre>  VITE v5.x.x  ready in xxx ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose</pre>
+      </div>
+
+      <p style="margin:12px 0 8px;font-size:14px;">按住 <code class="inline">Ctrl</code> 点击链接，或打开浏览器访问 <code class="inline">http://localhost:5173/</code></p>
+
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:20px;margin:14px 0;">
+        <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">你应该在浏览器里看到：</p>
+        <div style="background:#1a1f2e;border-radius:6px;padding:14px 18px;font-size:14px;">
+          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:12px;">
+            <span style="color:var(--blue);text-decoration:underline;cursor:pointer;margin-right:18px;">首页</span>
+            <span style="color:var(--text2);cursor:pointer;">关于</span>
+            &nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px;">← 导航栏（来自 App.vue）</span>
+          </div>
+          <div>
+            <h3 style="color:var(--text);font-size:16px;margin-bottom:6px;">🏠 首页</h3>
+            <p style="color:var(--text2);font-size:13px;">欢迎来到首页！</p>
+            <p style="color:var(--text2);font-size:11px;margin-top:10px;">↑ RouterView 里显示的内容（来自 HomeView.vue）</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip">
+        <div class="icon">🎉</div>
+        <p><strong>点击"关于"链接，内容切换但页面不刷新？</strong> 恭喜！你的第一个路由页面成功了！</p>
+      </div>
+    </section>
+
+    <!-- 注意事项 -->
+    <section class="section" id="notice">
+      <div class="section-header">
+        <div style="font-size:28px;">⚠️</div>
+        <div>
+          <div class="section-title">常见注意事项</div>
+          <div class="section-subtitle">初学者最容易踩的 6 个坑，提前看能少走很多弯路</div>
+        </div>
+      </div>
+
+      <div class="notice-grid">
+        <div class="notice-card nc-red">
+          <div class="nc-icon">🚨</div>
+          <div class="nc-title">忘记 .use(router)</div>
+          <div class="nc-body">在 <code class="inline">main.js</code> 里创建了路由但忘了挂载，<code class="inline">RouterLink</code> 和 <code class="inline">RouterView</code> 不会报错，但什么都不显示。<br><br>✅ 记住：<code class="inline">createApp(App).use(router).mount('#app')</code></div>
+        </div>
+
+        <div class="notice-card nc-orange">
+          <div class="nc-icon">📁</div>
+          <div class="nc-title">路径写错</div>
+          <div class="nc-body">导入文件时路径用 <code class="inline">../views/HomeView.vue</code>，<code class="inline">../</code> 表示上一级目录。<br><br>⚠️ 常见错误：<code class="inline">./views/...</code>（少了一个点，在 router 目录里找不到 views）</div>
+        </div>
+
+        <div class="notice-card nc-blue">
+          <div class="nc-icon">🔤</div>
+          <div class="nc-title">大小写敏感</div>
+          <div class="nc-body">文件名 <code class="inline">HomeView.vue</code> 和导入时的 <code class="inline">import HomeView from '...HomeView.vue'</code> 大小写必须完全一致。<br><br>⚠️ 在 Windows 下不报错，但部署到 Linux 服务器会出问题。</div>
+        </div>
+
+        <div class="notice-card nc-green">
+          <div class="nc-icon">🏷️</div>
+          <div class="nc-title">RouterLink 而非 &lt;a&gt;</div>
+          <div class="nc-body">导航跳转必须用 <code class="inline">&lt;RouterLink to="/路径"&gt;</code>，不能用普通的 <code class="inline">&lt;a href="/路径"&gt;</code>。<br><br>普通 &lt;a&gt; 会触发整页刷新，破坏 SPA 体验。</div>
+        </div>
+
+        <div class="notice-card nc-purple">
+          <div class="nc-icon">🖥️</div>
+          <div class="nc-title">RouterView 必须放在 App.vue</div>
+          <div class="nc-body">没有 <code class="inline">&lt;RouterView /&gt;</code>，路由页面内容没有地方显示。检查 <code class="inline">App.vue</code> 的 <code class="inline">&lt;template&gt;</code> 里有没有这个标签。</div>
+        </div>
+
+        <div class="notice-card nc-cyan">
+          <div class="nc-icon">🔄</div>
+          <div class="nc-title">修改后保存才生效</div>
+          <div class="nc-body">修改 <code class="inline">router/index.js</code> 后要按 <code class="inline">Ctrl + S</code> 保存，Vite 会自动热更新。如果没更新，试试刷新浏览器或重启 <code class="inline">npm run dev</code>。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 总结 -->
+    <section class="section" id="summary" style="background: linear-gradient(135deg, var(--bg2), #1a2018);">
+      <div class="section-header">
+        <div style="font-size:28px;">📋</div>
+        <div>
+          <div class="section-title">步骤总结</div>
+          <div class="section-subtitle">按这个清单，每次添加新路由页面只需 5 分钟</div>
+        </div>
+      </div>
+
+      <div class="summary-steps">
+        <div class="sum-step">
+          <div class="sum-dot" style="background:rgba(88,166,255,0.15);color:var(--blue);border:1.5px solid rgba(88,166,255,0.4);">1</div>
+          <div class="sum-content">
+            <strong>在 src/views/ 下新建 XxxView.vue 文件</strong>
+            <span>在 <code class="inline">&lt;template&gt;</code> 里写好页面内容</span>
+          </div>
+        </div>
+        <div class="sum-step">
+          <div class="sum-dot" style="background:rgba(63,185,80,0.15);color:var(--green);border:1.5px solid rgba(63,185,80,0.4);">2</div>
+          <div class="sum-content">
+            <strong>在 router/index.js 的 routes 数组里添加一条规则</strong>
+            <span><code class="inline">&#123; path: '/xxx', component: () =&gt; import('../views/XxxView.vue') &#125;</code></span>
+          </div>
+        </div>
+        <div class="sum-step">
+          <div class="sum-dot" style="background:rgba(210,153,34,0.15);color:var(--orange);border:1.5px solid rgba(210,153,34,0.4);">3</div>
+          <div class="sum-content">
+            <strong>在 App.vue 里添加导航链接</strong>
+            <span><code class="inline">&lt;RouterLink to="/xxx"&gt;页面名&lt;/RouterLink&gt;</code></span>
+          </div>
+        </div>
+        <div class="sum-step">
+          <div class="sum-dot" style="background:rgba(63,185,80,0.15);color:var(--green);border:1.5px solid rgba(63,185,80,0.4);">✓</div>
+          <div class="sum-content">
+            <strong>保存所有文件，浏览器里验证</strong>
+            <span>点击导航链接，看页面内容是否正常切换</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;padding:16px 20px;background:rgba(88,166,255,0.06);border:1px solid rgba(88,166,255,0.2);border-radius:8px;">
+        <p style="font-size:13px;color:var(--text2);margin-bottom:8px;">📦 完成上面步骤后，你的项目文件结构应该是这样：</p>
+        <div class="file-tree" style="margin:0;">
+          <span class="dir">src/</span><br>
+          &nbsp;&nbsp;├── <span class="dir">router/</span><br>
+          &nbsp;&nbsp;│   └── <span class="highlight">index.js</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">路由配置</span><br>
+          &nbsp;&nbsp;├── <span class="dir">views/</span><br>
+          &nbsp;&nbsp;│   ├── <span class="highlight">HomeView.vue</span>  &nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">首页</span><br>
+          &nbsp;&nbsp;│   └── <span class="highlight">AboutView.vue</span>  &nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">关于页</span><br>
+          &nbsp;&nbsp;├── <span class="file">App.vue</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">根组件（含RouterLink+RouterView）</span><br>
+          &nbsp;&nbsp;└── <span class="file">main.js</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">入口（已挂载router）</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- 底部 -->
+<div class="footer">
+  <p>🌱 前端初学者路由指南 · 基于 Vue 3 + Vue Router 4 + Vite</p>
+  <p style="margin-top:4px;">有问题随时问，多写多练是最快的进步方式 💪</p>
+</div>
+
+<!-- 侧边导航滚动高亮 -->
+<script>
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.sidebar a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+
+</body>
+</html>
