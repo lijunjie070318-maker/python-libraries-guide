@@ -3,61 +3,61 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Python 数据分析 — 全面指南</title>
+  <title>Python 数据采集完全指南 —— 从零开始掌握网络爬虫与文件读取</title>
   <style>
     :root {
-      --blue: #3b82f6;
-      --indigo: #6366f1;
-      --purple: #a855f7;
-      --green: #10b981;
-      --orange: #f59e0b;
-      --red: #ef4444;
-      --cyan: #06b6d4;
-      --dark: #0f172a;
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --secondary: #06b6d4;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --bg: #0f172a;
       --card: #1e293b;
-      --border: #334155;
+      --card2: #263347;
       --text: #e2e8f0;
       --muted: #94a3b8;
+      --border: #334155;
+      --code-bg: #0d1117;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-      background: var(--dark);
+      background: var(--bg);
       color: var(--text);
-      line-height: 1.7;
+      line-height: 1.8;
     }
 
-    /* ---- HERO ---- */
+    /* ── 顶部 Hero ── */
     .hero {
-      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0c1a2e 100%);
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 50%, #0c4a6e 100%);
+      padding: 70px 20px 60px;
       text-align: center;
-      padding: 80px 20px 60px;
       position: relative;
       overflow: hidden;
     }
     .hero::before {
       content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(circle at 20% 50%, rgba(99,102,241,.15) 0%, transparent 60%),
-                  radial-gradient(circle at 80% 20%, rgba(59,130,246,.15) 0%, transparent 50%);
-      pointer-events: none;
+      background: radial-gradient(circle at 20% 50%, rgba(79,70,229,.25) 0%, transparent 60%),
+                  radial-gradient(circle at 80% 20%, rgba(6,182,212,.2) 0%, transparent 50%);
     }
     .hero-badge {
       display: inline-block;
-      background: rgba(99,102,241,.2);
-      border: 1px solid rgba(99,102,241,.4);
-      color: #a5b4fc;
+      background: rgba(79,70,229,.3);
+      border: 1px solid var(--primary-light);
       border-radius: 999px;
       padding: 4px 16px;
       font-size: .8rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      margin-bottom: 20px;
+      color: var(--primary-light);
+      letter-spacing: 1px;
+      margin-bottom: 16px;
     }
     .hero h1 {
       font-size: clamp(2rem, 5vw, 3.5rem);
       font-weight: 800;
-      background: linear-gradient(90deg, #60a5fa, #a78bfa, #34d399);
+      background: linear-gradient(90deg, #a5b4fc, #67e8f9, #fde68a);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -66,1040 +66,393 @@
     .hero p {
       font-size: 1.1rem;
       color: var(--muted);
-      max-width: 640px;
+      max-width: 600px;
       margin: 0 auto 32px;
     }
-    .hero-pills { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .pill {
-      padding: 6px 18px;
+    .hero-tags { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .tag {
+      padding: 5px 14px;
       border-radius: 999px;
-      font-size: .85rem;
+      font-size: .8rem;
       font-weight: 600;
-      border: 1.5px solid;
     }
-    .pill-blue  { color: #60a5fa; border-color: #3b82f6; background: rgba(59,130,246,.1); }
-    .pill-green { color: #34d399; border-color: #10b981; background: rgba(16,185,129,.1); }
-    .pill-purple{ color: #c084fc; border-color: #a855f7; background: rgba(168,85,247,.1); }
-    .pill-orange{ color: #fbbf24; border-color: #f59e0b; background: rgba(245,158,11,.1); }
+    .tag-blue  { background: rgba(99,102,241,.2); color: #a5b4fc; border: 1px solid rgba(99,102,241,.4); }
+    .tag-cyan  { background: rgba(6,182,212,.2);  color: #67e8f9; border: 1px solid rgba(6,182,212,.4); }
+    .tag-amber { background: rgba(245,158,11,.2); color: #fcd34d; border: 1px solid rgba(245,158,11,.4); }
+    .tag-green { background: rgba(16,185,129,.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,.4); }
 
-    /* ---- LAYOUT ---- */
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-    section { padding: 60px 0; }
+    /* ── 导航 ── */
+    nav {
+      position: sticky; top: 0; z-index: 99;
+      background: rgba(15,23,42,.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav ul {
+      display: flex; list-style: none;
+      max-width: 1100px; margin: 0 auto;
+      padding: 0 20px;
+      overflow-x: auto;
+      gap: 4px;
+    }
+    nav ul li a {
+      display: block;
+      padding: 14px 16px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: .88rem;
+      white-space: nowrap;
+      transition: color .2s;
+    }
+    nav ul li a:hover { color: var(--primary-light); }
+
+    /* ── 通用布局 ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 60px 20px; }
     .section-title {
       font-size: 1.8rem;
       font-weight: 700;
       margin-bottom: 8px;
-    }
-    .section-sub { color: var(--muted); margin-bottom: 40px; font-size: .95rem; }
-    .divider { height: 1px; background: var(--border); margin: 0; }
-
-    /* ---- FLOW DIAGRAM ---- */
-    .flow-wrap { overflow-x: auto; padding: 10px 0; }
-    .flow {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 0;
-      flex-wrap: nowrap;
-      min-width: 680px;
+      gap: 12px;
     }
-    .flow-step {
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
-      width: 120px;
-    }
-    .flow-icon {
-      width: 64px; height: 64px;
-      border-radius: 16px;
+    .section-title .icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem;
+      font-size: 1.2rem;
+      flex-shrink: 0;
     }
-    .flow-label { font-size: .8rem; color: var(--muted); text-align: center; }
-    .flow-arrow { font-size: 1.4rem; color: var(--border); padding: 0 4px; flex-shrink: 0; margin-top: -20px; }
-    .bg-blue   { background: rgba(59,130,246,.15); border: 1.5px solid rgba(59,130,246,.3); }
-    .bg-green  { background: rgba(16,185,129,.15); border: 1.5px solid rgba(16,185,129,.3); }
-    .bg-purple { background: rgba(168,85,247,.15); border: 1.5px solid rgba(168,85,247,.3); }
-    .bg-orange { background: rgba(245,158,11,.15); border: 1.5px solid rgba(245,158,11,.3); }
-    .bg-cyan   { background: rgba(6,182,212,.15);  border: 1.5px solid rgba(6,182,212,.3); }
-    .bg-red    { background: rgba(239,68,68,.15);  border: 1.5px solid rgba(239,68,68,.3); }
+    .icon-blue  { background: rgba(99,102,241,.2); }
+    .icon-cyan  { background: rgba(6,182,212,.2); }
+    .icon-amber { background: rgba(245,158,11,.2); }
+    .icon-green { background: rgba(16,185,129,.2); }
+    .icon-red   { background: rgba(239,68,68,.2); }
 
-    /* ---- LIBRARY CARDS ---- */
-    .lib-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+    .section-sub {
+      color: var(--muted);
+      margin-bottom: 36px;
+      padding-left: 52px;
     }
-    .lib-card {
+
+    /* ── 卡片 ── */
+    .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 24px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+    .card-grid {
+      display: grid;
+      gap: 20px;
+    }
+    .card-grid-2 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .card-grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+    /* ── 代码块 ── */
+    .code-wrap {
+      background: var(--code-bg);
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 16px 0;
+    }
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      font-size: .8rem;
+      color: #8b949e;
+    }
+    .code-dots { display: flex; gap: 6px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+    pre {
+      padding: 20px;
+      overflow-x: auto;
+      font-size: .88rem;
+      line-height: 1.7;
+    }
+    code { font-family: 'Fira Code', 'Consolas', 'Courier New', monospace; }
+    /* 简单语法着色 */
+    .kw  { color: #ff7b72; }   /* 关键字 */
+    .fn  { color: #d2a8ff; }   /* 函数 */
+    .str { color: #a5d6ff; }   /* 字符串 */
+    .cm  { color: #8b949e; font-style: italic; } /* 注释 */
+    .num { color: #79c0ff; }   /* 数字 */
+    .cls { color: #ffa657; }   /* 类名 */
+
+    /* ── 流程图 ── */
+    .flow-wrap { overflow-x: auto; padding: 10px 0; }
+
+    /* ── 步骤列表 ── */
+    .steps { counter-reset: step; }
+    .step-item {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 28px;
+      position: relative;
+    }
+    .step-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 18px; top: 44px;
+      width: 2px;
+      height: calc(100% - 8px);
+      background: linear-gradient(to bottom, var(--primary), transparent);
+    }
+    .step-num {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .9rem;
+      flex-shrink: 0;
+    }
+    .step-content { flex: 1; }
+    .step-content h4 { font-size: 1rem; margin-bottom: 6px; color: #e2e8f0; }
+    .step-content p  { color: var(--muted); font-size: .9rem; }
+
+    /* ── 提示框 ── */
+    .tip {
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: .9rem;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin: 16px 0;
+    }
+    .tip-warn { background: rgba(245,158,11,.12); border-left: 3px solid var(--accent); color: #fcd34d; }
+    .tip-info { background: rgba(6,182,212,.12);  border-left: 3px solid var(--secondary); color: #67e8f9; }
+    .tip-ok   { background: rgba(16,185,129,.12); border-left: 3px solid var(--success);   color: #6ee7b7; }
+
+    /* ── 表格 ── */
+    .tbl-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    thead tr { background: var(--card2); }
+    th { padding: 12px 16px; text-align: left; color: var(--muted); font-weight: 600; white-space: nowrap; }
+    td { padding: 12px 16px; border-top: 1px solid var(--border); vertical-align: top; }
+    tbody tr:hover { background: rgba(255,255,255,.03); }
+
+    /* ── 库卡片 ── */
+    .lib-card {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
       transition: transform .2s, border-color .2s;
     }
-    .lib-card:hover { transform: translateY(-4px); border-color: rgba(99,102,241,.5); }
-    .lib-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
-    .lib-logo {
+    .lib-card:hover { transform: translateY(-4px); border-color: var(--primary-light); }
+    .lib-icon {
       width: 48px; height: 48px;
       border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; font-weight: 800;
-      flex-shrink: 0;
+      font-size: 1.5rem;
+      margin-bottom: 12px;
     }
-    .lib-name { font-size: 1.1rem; font-weight: 700; }
-    .lib-ver  { font-size: .75rem; color: var(--muted); }
-    .lib-desc { font-size: .9rem; color: var(--muted); margin-bottom: 14px; line-height: 1.6; }
-    .lib-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-    .tag {
-      font-size: .7rem; font-weight: 600;
+    .lib-card h3 { font-size: 1rem; margin-bottom: 6px; }
+    .lib-card p  { color: var(--muted); font-size: .85rem; }
+    .lib-badge {
+      display: inline-block;
+      margin-top: 10px;
       padding: 2px 10px;
       border-radius: 999px;
-      background: rgba(99,102,241,.15);
-      color: #a5b4fc;
-      border: 1px solid rgba(99,102,241,.25);
+      font-size: .75rem;
+      background: rgba(99,102,241,.2);
+      color: var(--primary-light);
     }
 
-    /* ---- CODE BLOCK ---- */
-    .code-section { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
-    @media(max-width:700px){ .code-section { grid-template-columns: 1fr; } }
-    .code-block {
-      background: #0d1117;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
+    /* ── 章节分隔 ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0;
     }
-    .code-header {
-      background: #161b22;
-      padding: 10px 16px;
-      display: flex; align-items: center; gap: 8px;
-      border-bottom: 1px solid var(--border);
-    }
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dot-r { background: #ff5f56; }
-    .dot-y { background: #febc2e; }
-    .dot-g { background: #27c93f; }
-    .code-filename { font-size: .8rem; color: var(--muted); margin-left: 6px; }
-    pre {
-      padding: 18px 20px;
-      font-size: .82rem;
-      line-height: 1.6;
-      overflow-x: auto;
-      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
-    }
-    .kw  { color: #ff7b72; }
-    .fn  { color: #d2a8ff; }
-    .str { color: #a5d6ff; }
-    .num { color: #79c0ff; }
-    .cm  { color: #8b949e; font-style: italic; }
-    .op  { color: #ff7b72; }
-    .var { color: #e6edf3; }
-    .lib { color: #ffa657; }
 
-    /* ---- VISUAL CARDS ---- */
-    .visual-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
-    .visual-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-    }
-    .visual-chart { padding: 20px; }
-    .visual-info { padding: 16px 20px 20px; border-top: 1px solid var(--border); }
-    .visual-title { font-weight: 700; margin-bottom: 4px; }
-    .visual-desc  { font-size: .85rem; color: var(--muted); }
-
-    /* ---- BAR CHART SVG ---- */
-    .chart-label { font-size: 11px; fill: #94a3b8; font-family: 'Segoe UI', sans-serif; }
-    .chart-val   { font-size: 11px; fill: #e2e8f0; font-family: 'Segoe UI', sans-serif; font-weight: 600; }
-
-    /* ---- STEPS ---- */
-    .steps { display: flex; flex-direction: column; gap: 0; }
-    .step {
-      display: flex; gap: 20px;
-      padding: 20px 0;
-    }
-    .step:not(:last-child) { border-bottom: 1px solid var(--border); }
-    .step-num {
-      width: 40px; height: 40px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: .9rem;
-      flex-shrink: 0;
-      background: linear-gradient(135deg, #3b82f6, #6366f1);
-      box-shadow: 0 0 12px rgba(99,102,241,.4);
-    }
-    .step-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
-    .step-body p  { font-size: .9rem; color: var(--muted); }
-
-    /* ---- STAT BOXES ---- */
-    .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
-    .stat-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px 16px;
-      text-align: center;
-    }
-    .stat-num { font-size: 2rem; font-weight: 800; }
-    .stat-lbl { font-size: .8rem; color: var(--muted); margin-top: 4px; }
-
-    /* ---- FOOTER ---- */
+    /* ── 页脚 ── */
     footer {
-      background: #080e1a;
-      border-top: 1px solid var(--border);
       text-align: center;
-      padding: 28px 20px;
-      font-size: .85rem;
+      padding: 40px 20px;
       color: var(--muted);
+      font-size: .85rem;
+      border-top: 1px solid var(--border);
     }
-    footer span { color: #60a5fa; }
 
-    /* ---- TOOLTIP / HIGHLIGHT ---- */
-    mark {
-      background: rgba(59,130,246,.2);
-      color: #93c5fd;
+    /* ── 安装命令 ── */
+    .install-cmd {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--code-bg);
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-family: 'Fira Code', monospace;
+      font-size: .9rem;
+      color: #6ee7b7;
+      margin: 8px 0;
+    }
+    .install-cmd span.dollar { color: var(--muted); }
+
+    /* ── 文件类型徽章 ── */
+    .fmt-badge {
+      display: inline-block;
+      padding: 2px 8px;
       border-radius: 4px;
-      padding: 0 4px;
+      font-size: .75rem;
+      font-weight: 700;
+      margin: 2px;
     }
+    .fmt-csv   { background:#166534; color:#86efac; }
+    .fmt-excel { background:#1d4ed8; color:#bfdbfe; }
+    .fmt-json  { background:#92400e; color:#fde68a; }
+    .fmt-sql   { background:#581c87; color:#e9d5ff; }
+    .fmt-html  { background:#7f1d1d; color:#fca5a5; }
 
-    /* ---- PIPELINE ANIMATION ---- */
-    @keyframes pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
-    .pulse { animation: pulse 2s ease-in-out infinite; }
-
-    /* ---- TABLE ---- */
-    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
-    th { background: #1e293b; padding: 10px 14px; text-align: left; color: var(--muted); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
-    td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,.02); }
-    .tbl-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-
-    /* ---- COMPARISON ---- */
-    .cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    @media(max-width:600px){ .cmp-grid { grid-template-columns: 1fr; } }
-    .cmp-card {
-      background: var(--card);
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      padding: 20px;
-    }
-    .cmp-title { font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-    .cmp-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; font-size: .88rem; }
-    .cmp-icon { flex-shrink: 0; margin-top: 2px; }
-
-    /* progress bar */
-    .prog-row { margin-bottom: 12px; }
-    .prog-label { display: flex; justify-content: space-between; font-size: .82rem; margin-bottom: 4px; }
-    .prog-bar { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; }
-    .prog-fill { height: 100%; border-radius: 999px; }
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   </style>
 </head>
 <body>
 
-<!-- ===== HERO ===== -->
+<!-- ───────────── HERO ───────────── -->
 <header class="hero">
-  <div class="hero-badge">📊 2026 完整指南</div>
-  <h1>Python 数据分析<br/>从入门到实战</h1>
-  <p>掌握数据清洗、探索性分析、可视化与建模，用 Python 解锁数据背后的价值</p>
-  <div class="hero-pills">
-    <span class="pill pill-blue">NumPy</span>
-    <span class="pill pill-green">Pandas</span>
-    <span class="pill pill-purple">Matplotlib</span>
-    <span class="pill pill-orange">Scikit-learn</span>
-    <span class="pill pill-blue">Seaborn</span>
-    <span class="pill pill-green">Jupyter</span>
+  <div style="position:relative;z-index:1">
+    <div class="hero-badge">🐍 Python 入门系列</div>
+    <h1>Python 数据采集完全指南<br><span style="font-size:.55em;font-weight:400;opacity:.8">从零开始掌握网络爬虫与文件读取</span></h1>
+    <p>从零开始，通过图解 + 完整代码，掌握数据采集的每一个步骤</p>
+    <div class="hero-tags">
+      <span class="tag tag-blue">🌐 网络爬虫</span>
+      <span class="tag tag-cyan">📁 文件读取</span>
+      <span class="tag tag-amber">🔌 API 调用</span>
+      <span class="tag tag-green">🗄️ 数据库</span>
+    </div>
   </div>
 </header>
 
-<!-- ===== 统计数字 ===== -->
-<div style="background:#111827; padding: 32px 0;">
+<!-- ───────────── NAV ───────────── -->
+<nav>
+  <ul>
+    <li><a href="#what">① 什么是数据采集</a></li>
+    <li><a href="#sources">② 数据来源</a></li>
+    <li><a href="#libs">③ 常用库</a></li>
+    <li><a href="#install">④ 环境安装</a></li>
+    <li><a href="#file">⑤ 文件采集</a></li>
+    <li><a href="#crawler">⑥ 网络爬虫</a></li>
+    <li><a href="#api">⑦ API 采集</a></li>
+    <li><a href="#db">⑧ 数据库</a></li>
+    <li><a href="#tips">⑨ 注意事项</a></li>
+  </ul>
+</nav>
+
+<!-- ───────────── 1. 什么是数据采集 ───────────── -->
+<section id="what">
   <div class="container">
-    <div class="stats">
-      <div class="stat-box">
-        <div class="stat-num" style="color:#60a5fa;">6+</div>
-        <div class="stat-lbl">核心分析库</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num" style="color:#34d399;">5</div>
-        <div class="stat-lbl">分析流程阶段</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num" style="color:#c084fc;">20+</div>
-        <div class="stat-lbl">代码示例</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num" style="color:#fbbf24;">10M+</div>
-        <div class="stat-lbl">全球数据科学家使用</div>
-      </div>
+    <div class="section-title">
+      <span class="icon icon-blue">🔍</span>
+      什么是数据采集？
     </div>
-  </div>
-</div>
+    <p class="section-sub">数据采集是数据分析的第一步——将散落在各处的数据统一抓取到本地</p>
 
-<div class="divider"></div>
-
-<!-- ===== 数据分析流程 ===== -->
-<section>
-  <div class="container">
-    <div class="section-title">📋 数据分析完整流程</div>
-    <div class="section-sub">一个标准的 Python 数据分析项目遵循以下 6 个核心阶段</div>
-
-    <div class="flow-wrap">
-      <div class="flow">
-        <div class="flow-step">
-          <div class="flow-icon bg-blue pulse">📥</div>
-          <div style="font-size:.85rem;font-weight:700;color:#60a5fa;">数据获取</div>
-          <div class="flow-label">CSV · API · 数据库</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <div class="flow-icon bg-orange pulse" style="animation-delay:.3s">🧹</div>
-          <div style="font-size:.85rem;font-weight:700;color:#fbbf24;">数据清洗</div>
-          <div class="flow-label">缺失值 · 异常值</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <div class="flow-icon bg-purple pulse" style="animation-delay:.6s">🔍</div>
-          <div style="font-size:.85rem;font-weight:700;color:#c084fc;">探索分析</div>
-          <div class="flow-label">EDA · 统计描述</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <div class="flow-icon bg-cyan pulse" style="animation-delay:.9s">📊</div>
-          <div style="font-size:.85rem;font-weight:700;color:#22d3ee;">数据可视化</div>
-          <div class="flow-label">图表 · 仪表盘</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <div class="flow-icon bg-green pulse" style="animation-delay:1.2s">🤖</div>
-          <div style="font-size:.85rem;font-weight:700;color:#34d399;">建模分析</div>
-          <div class="flow-label">ML · 统计模型</div>
-        </div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">
-          <div class="flow-icon bg-red pulse" style="animation-delay:1.5s">📝</div>
-          <div style="font-size:.85rem;font-weight:700;color:#f87171;">报告输出</div>
-          <div class="flow-label">结论 · 洞察</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SVG 流程详解 -->
-    <div style="margin-top:40px; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px;">
-      <svg viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-height:280px;">
+    <!-- SVG 插图：整体概念图 -->
+    <div class="card" style="padding:0;overflow:hidden">
+      <svg viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
         <defs>
-          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#3b82f6" stop-opacity=".8"/>
-            <stop offset="100%" stop-color="#6366f1" stop-opacity=".8"/>
+          <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#1e293b"/>
+            <stop offset="100%" stop-color="#0f172a"/>
           </linearGradient>
-          <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#f59e0b" stop-opacity=".8"/>
-            <stop offset="100%" stop-color="#ef4444" stop-opacity=".8"/>
-          </linearGradient>
-          <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#a855f7" stop-opacity=".8"/>
-            <stop offset="100%" stop-color="#ec4899" stop-opacity=".8"/>
-          </linearGradient>
-          <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#06b6d4" stop-opacity=".8"/>
-            <stop offset="100%" stop-color="#3b82f6" stop-opacity=".8"/>
-          </linearGradient>
-          <linearGradient id="g5" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#10b981" stop-opacity=".8"/>
-            <stop offset="100%" stop-color="#06b6d4" stop-opacity=".8"/>
-          </linearGradient>
-          <linearGradient id="g6" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#ef4444" stop-opacity=".8"/>
-            <stop offset="100%" stop-color="#f97316" stop-opacity=".8"/>
-          </linearGradient>
-          <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-            <path d="M0,1 L7,4 L0,7 Z" fill="#475569"/>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <rect width="900" height="320" fill="url(#bg1)"/>
+
+        <!-- 数据来源节点 -->
+        <!-- 网页 -->
+        <rect x="30" y="60" width="120" height="60" rx="12" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="90" y="86" text-anchor="middle" fill="#93c5fd" font-size="20">🌐</text>
+        <text x="90" y="108" text-anchor="middle" fill="#93c5fd" font-size="13">网页 / 爬虫</text>
+
+        <!-- 文件 -->
+        <rect x="30" y="140" width="120" height="60" rx="12" fill="#1e3a2a" stroke="#22c55e" stroke-width="1.5"/>
+        <text x="90" y="166" text-anchor="middle" fill="#86efac" font-size="20">📁</text>
+        <text x="90" y="188" text-anchor="middle" fill="#86efac" font-size="13">本地文件</text>
+
+        <!-- API -->
+        <rect x="30" y="220" width="120" height="60" rx="12" fill="#3a2a1e" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="90" y="246" text-anchor="middle" fill="#fcd34d" font-size="20">🔌</text>
+        <text x="90" y="268" text-anchor="middle" fill="#fcd34d" font-size="13">API 接口</text>
+
+        <!-- 数据库 (右侧) -->
+        <rect x="750" y="60" width="120" height="60" rx="12" fill="#2a1e3a" stroke="#a855f7" stroke-width="1.5"/>
+        <text x="810" y="86" text-anchor="middle" fill="#d8b4fe" font-size="20">🗄️</text>
+        <text x="810" y="108" text-anchor="middle" fill="#d8b4fe" font-size="13">数据库</text>
+
+        <!-- 传感器 -->
+        <rect x="750" y="140" width="120" height="60" rx="12" fill="#1e3a3a" stroke="#06b6d4" stroke-width="1.5"/>
+        <text x="810" y="166" text-anchor="middle" fill="#67e8f9" font-size="20">📡</text>
+        <text x="810" y="188" text-anchor="middle" fill="#67e8f9" font-size="13">实时流数据</text>
+
+        <!-- 中心：Python -->
+        <rect x="340" y="100" width="220" height="120" rx="20" fill="#312e81" stroke="#818cf8" stroke-width="2" filter="url(#glow)"/>
+        <text x="450" y="148" text-anchor="middle" fill="#c7d2fe" font-size="30">🐍</text>
+        <text x="450" y="178" text-anchor="middle" fill="#e0e7ff" font-size="16" font-weight="bold">Python 数据采集</text>
+        <text x="450" y="198" text-anchor="middle" fill="#a5b4fc" font-size="11">requests · pandas · scrapy</text>
+
+        <!-- 箭头 左 → 中 -->
+        <line x1="152" y1="90"  x2="338" y2="145" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+        <line x1="152" y1="170" x2="338" y2="160" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+        <line x1="152" y1="250" x2="338" y2="175" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+        <!-- 箭头 中 → 右 -->
+        <line x1="562" y1="145" x2="748" y2="90"  stroke="#a855f7" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
+        <line x1="562" y1="160" x2="748" y2="170" stroke="#06b6d4" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr2)"/>
+
+        <!-- 箭头 markers -->
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
+          </marker>
+          <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
           </marker>
         </defs>
 
-        <!-- Connecting lines -->
-        <line x1="120" y1="130" x2="200" y2="130" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
-        <line x1="270" y1="130" x2="350" y2="130" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
-        <line x1="420" y1="130" x2="500" y2="130" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
-        <line x1="570" y1="130" x2="650" y2="130" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
-        <line x1="720" y1="130" x2="800" y2="130" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
-
-        <!-- Step 1: 数据获取 -->
-        <rect x="20" y="90" width="100" height="80" rx="12" fill="url(#g1)" opacity=".9"/>
-        <text x="70" y="120" text-anchor="middle" fill="white" font-size="22">📥</text>
-        <text x="70" y="142" text-anchor="middle" fill="white" font-size="11" font-weight="bold">数据获取</text>
-        <text x="70" y="158" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">pandas.read_csv()</text>
-
-        <!-- Step 2: 数据清洗 -->
-        <rect x="200" y="90" width="100" height="80" rx="12" fill="url(#g2)" opacity=".9"/>
-        <text x="250" y="120" text-anchor="middle" fill="white" font-size="22">🧹</text>
-        <text x="250" y="142" text-anchor="middle" fill="white" font-size="11" font-weight="bold">数据清洗</text>
-        <text x="250" y="158" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">dropna() / fillna()</text>
-
-        <!-- Step 3: 探索分析 -->
-        <rect x="380" y="90" width="100" height="80" rx="12" fill="url(#g3)" opacity=".9"/>
-        <text x="430" y="120" text-anchor="middle" fill="white" font-size="22">🔍</text>
-        <text x="430" y="142" text-anchor="middle" fill="white" font-size="11" font-weight="bold">探索分析</text>
-        <text x="430" y="158" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">describe() / corr()</text>
-
-        <!-- Step 4: 可视化 -->
-        <rect x="560" y="90" width="100" height="80" rx="12" fill="url(#g4)" opacity=".9"/>
-        <text x="610" y="120" text-anchor="middle" fill="white" font-size="22">📊</text>
-        <text x="610" y="142" text-anchor="middle" fill="white" font-size="11" font-weight="bold">可视化</text>
-        <text x="610" y="158" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">plt.plot() / sns</text>
-
-        <!-- Step 5: 建模 -->
-        <rect x="740" y="90" width="100" height="80" rx="12" fill="url(#g5)" opacity=".9"/>
-        <text x="790" y="120" text-anchor="middle" fill="white" font-size="22">🤖</text>
-        <text x="790" y="142" text-anchor="middle" fill="white" font-size="11" font-weight="bold">建模分析</text>
-        <text x="790" y="158" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">sklearn / statsmodels</text>
-
-        <!-- Bottom labels -->
-        <text x="70"  y="190" text-anchor="middle" fill="#60a5fa" font-size="9">CSV/Excel/SQL/API</text>
-        <text x="250" y="190" text-anchor="middle" fill="#fbbf24" font-size="9">缺失/重复/格式化</text>
-        <text x="430" y="190" text-anchor="middle" fill="#c084fc" font-size="9">分布/相关/分组</text>
-        <text x="610" y="190" text-anchor="middle" fill="#22d3ee" font-size="9">折线/柱状/散点/热图</text>
-        <text x="790" y="190" text-anchor="middle" fill="#34d399" font-size="9">回归/分类/聚类</text>
-
-        <!-- Feedback arrow -->
-        <path d="M840 175 Q840 230 430 230 Q20 230 20 175" stroke="#334155" stroke-width="1.5" fill="none" stroke-dasharray="6,4" marker-end="url(#arr)"/>
-        <text x="430" y="248" text-anchor="middle" fill="#475569" font-size="10">迭代优化</text>
+        <!-- 输出标签 -->
+        <rect x="340" y="260" width="100" height="32" rx="8" fill="#134e4a" stroke="#2dd4bf"/>
+        <text x="390" y="281" text-anchor="middle" fill="#99f6e4" font-size="12">📊 分析</text>
+        <rect x="460" y="260" width="100" height="32" rx="8" fill="#1e3a2a" stroke="#22c55e"/>
+        <text x="510" y="281" text-anchor="middle" fill="#86efac" font-size="12">💾 存储</text>
+        <line x1="450" y1="222" x2="390" y2="260" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="450" y1="222" x2="510" y2="260" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3"/>
       </svg>
     </div>
-  </div>
-</section>
 
-<div class="divider"></div>
-
-<!-- ===== 核心库介绍 ===== -->
-<section>
-  <div class="container">
-    <div class="section-title">📦 核心库详解</div>
-    <div class="section-sub">Python 数据分析生态系统由以下六大核心库构成</div>
-    <div class="lib-grid">
-
-      <!-- NumPy -->
-      <div class="lib-card">
-        <div class="lib-header">
-          <div class="lib-logo" style="background:linear-gradient(135deg,#013243,#4DABCF); color:#4DABCF;">N</div>
-          <div>
-            <div class="lib-name">NumPy</div>
-            <div class="lib-ver">Numerical Python · v1.26+</div>
-          </div>
-        </div>
-        <div class="lib-desc">Python 科学计算的基础库，提供高效的 <mark>N 维数组</mark> (ndarray) 对象，支持向量化运算、广播机制和线性代数操作，是所有数值计算库的底层依赖。</div>
-        <div style="margin-bottom:12px;">
-          <div class="prog-row">
-            <div class="prog-label"><span>运算速度</span><span style="color:#4DABCF;">95%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:95%;background:linear-gradient(90deg,#013243,#4DABCF);"></div></div>
-          </div>
-          <div class="prog-row">
-            <div class="prog-label"><span>使用频率</span><span style="color:#4DABCF;">99%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:99%;background:linear-gradient(90deg,#013243,#4DABCF);"></div></div>
-          </div>
-        </div>
-        <div class="lib-tags">
-          <span class="tag">数组运算</span><span class="tag">线性代数</span><span class="tag">傅里叶变换</span><span class="tag">随机数</span>
-        </div>
+    <div class="card-grid card-grid-3" style="margin-top:24px">
+      <div class="card" style="border-color:#3b82f6">
+        <div style="font-size:2rem;margin-bottom:10px">📥</div>
+        <h3 style="margin-bottom:8px;color:#93c5fd">输入</h3>
+        <p style="color:var(--muted);font-size:.9rem">来自网页、文件、数据库、API 等各种来源的原始数据</p>
       </div>
-
-      <!-- Pandas -->
-      <div class="lib-card">
-        <div class="lib-header">
-          <div class="lib-logo" style="background:linear-gradient(135deg,#130654,#e70488); color:#e70488;">P</div>
-          <div>
-            <div class="lib-name">Pandas</div>
-            <div class="lib-ver">Panel Data · v2.1+</div>
-          </div>
-        </div>
-        <div class="lib-desc">数据分析的核心工具，提供 <mark>DataFrame</mark> 和 Series 数据结构，支持数据读取、清洗、合并、分组聚合、时序分析等全流程操作，被誉为"数据科学的瑞士军刀"。</div>
-        <div style="margin-bottom:12px;">
-          <div class="prog-row">
-            <div class="prog-label"><span>数据处理</span><span style="color:#e70488;">98%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:98%;background:linear-gradient(90deg,#130654,#e70488);"></div></div>
-          </div>
-          <div class="prog-row">
-            <div class="prog-label"><span>易用性</span><span style="color:#e70488;">90%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:90%;background:linear-gradient(90deg,#130654,#e70488);"></div></div>
-          </div>
-        </div>
-        <div class="lib-tags">
-          <span class="tag">DataFrame</span><span class="tag">数据清洗</span><span class="tag">分组聚合</span><span class="tag">时序</span>
-        </div>
+      <div class="card" style="border-color:#8b5cf6">
+        <div style="font-size:2rem;margin-bottom:10px">⚙️</div>
+        <h3 style="margin-bottom:8px;color:#c4b5fd">处理</h3>
+        <p style="color:var(--muted);font-size:.9rem">Python 程序发送请求、解析内容、提取所需字段</p>
       </div>
-
-      <!-- Matplotlib -->
-      <div class="lib-card">
-        <div class="lib-header">
-          <div class="lib-logo" style="background:linear-gradient(135deg,#11557c,#ef8336); color:#ef8336;">M</div>
-          <div>
-            <div class="lib-name">Matplotlib</div>
-            <div class="lib-ver">可视化基础 · v3.8+</div>
-          </div>
-        </div>
-        <div class="lib-desc">Python 最成熟的绘图库，提供类似 MATLAB 的绘图接口。支持折线图、散点图、柱状图、饼图等 <mark>数十种图表类型</mark>，可精细控制每一个图形元素。</div>
-        <div style="margin-bottom:12px;">
-          <div class="prog-row">
-            <div class="prog-label"><span>图表种类</span><span style="color:#ef8336;">92%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:92%;background:linear-gradient(90deg,#11557c,#ef8336);"></div></div>
-          </div>
-          <div class="prog-row">
-            <div class="prog-label"><span>定制灵活度</span><span style="color:#ef8336;">95%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:95%;background:linear-gradient(90deg,#11557c,#ef8336);"></div></div>
-          </div>
-        </div>
-        <div class="lib-tags">
-          <span class="tag">折线图</span><span class="tag">散点图</span><span class="tag">子图</span><span class="tag">3D绘图</span>
-        </div>
-      </div>
-
-      <!-- Seaborn -->
-      <div class="lib-card">
-        <div class="lib-header">
-          <div class="lib-logo" style="background:linear-gradient(135deg,#3b6978,#84a9ac); color:#84a9ac;">S</div>
-          <div>
-            <div class="lib-name">Seaborn</div>
-            <div class="lib-ver">统计可视化 · v0.13+</div>
-          </div>
-        </div>
-        <div class="lib-desc">基于 Matplotlib 的高层次统计可视化库，内置 <mark>美观的配色方案</mark>，几行代码即可绘制热力图、箱线图、violin 图、回归图等，专为探索性数据分析设计。</div>
-        <div style="margin-bottom:12px;">
-          <div class="prog-row">
-            <div class="prog-label"><span>美观度</span><span style="color:#84a9ac;">96%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:96%;background:linear-gradient(90deg,#3b6978,#84a9ac);"></div></div>
-          </div>
-          <div class="prog-row">
-            <div class="prog-label"><span>代码简洁度</span><span style="color:#84a9ac;">94%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:94%;background:linear-gradient(90deg,#3b6978,#84a9ac);"></div></div>
-          </div>
-        </div>
-        <div class="lib-tags">
-          <span class="tag">热力图</span><span class="tag">箱线图</span><span class="tag">回归图</span><span class="tag">分布图</span>
-        </div>
-      </div>
-
-      <!-- Scikit-learn -->
-      <div class="lib-card">
-        <div class="lib-header">
-          <div class="lib-logo" style="background:linear-gradient(135deg,#f7931e,#3498db); color:white; font-size:1rem;">SK</div>
-          <div>
-            <div class="lib-name">Scikit-learn</div>
-            <div class="lib-ver">机器学习 · v1.4+</div>
-          </div>
-        </div>
-        <div class="lib-desc">Python 机器学习的标准库，提供分类、回归、聚类、降维等 <mark>数百种算法</mark>，统一的 fit/predict 接口让模型切换极为便捷，也包含完整的评估与交叉验证工具。</div>
-        <div style="margin-bottom:12px;">
-          <div class="prog-row">
-            <div class="prog-label"><span>算法覆盖</span><span style="color:#f7931e;">97%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:97%;background:linear-gradient(90deg,#f7931e,#3498db);"></div></div>
-          </div>
-          <div class="prog-row">
-            <div class="prog-label"><span>生产稳定性</span><span style="color:#f7931e;">98%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:98%;background:linear-gradient(90deg,#f7931e,#3498db);"></div></div>
-          </div>
-        </div>
-        <div class="lib-tags">
-          <span class="tag">分类</span><span class="tag">回归</span><span class="tag">聚类</span><span class="tag">降维</span>
-        </div>
-      </div>
-
-      <!-- Jupyter -->
-      <div class="lib-card">
-        <div class="lib-header">
-          <div class="lib-logo" style="background:linear-gradient(135deg,#f37626,#f7a347); font-size:1.5rem;">🟠</div>
-          <div>
-            <div class="lib-name">Jupyter Notebook</div>
-            <div class="lib-ver">交互式开发环境</div>
-          </div>
-        </div>
-        <div class="lib-desc">数据科学家首选的 <mark>交互式开发环境</mark>，支持在单元格中混合执行代码、展示图表、编写 Markdown 文档，方便探索和分享数据分析过程。</div>
-        <div style="margin-bottom:12px;">
-          <div class="prog-row">
-            <div class="prog-label"><span>交互性</span><span style="color:#f37626;">99%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:99%;background:linear-gradient(90deg,#f37626,#f7a347);"></div></div>
-          </div>
-          <div class="prog-row">
-            <div class="prog-label"><span>可分享性</span><span style="color:#f37626;">96%</span></div>
-            <div class="prog-bar"><div class="prog-fill" style="width:96%;background:linear-gradient(90deg,#f37626,#f7a347);"></div></div>
-          </div>
-        </div>
-        <div class="lib-tags">
-          <span class="tag">交互执行</span><span class="tag">Markdown</span><span class="tag">图表内嵌</span><span class="tag">nbconvert</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- ===== 代码示例 ===== -->
-<section>
-  <div class="container">
-    <div class="section-title">💻 实战代码示例</div>
-    <div class="section-sub">从数据读取到可视化的完整代码演示</div>
-
-    <!-- 示例1：数据读取与清洗 -->
-    <div style="margin-bottom:32px;">
-      <h3 style="margin-bottom:16px;color:#a5b4fc;font-size:1rem;">① 数据读取 &amp; 基础探索</h3>
-      <div class="code-section">
-        <div class="code-block">
-          <div class="code-header">
-            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-            <span class="code-filename">01_load_and_explore.py</span>
-          </div>
-          <pre><span class="kw">import</span> <span class="lib">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
-<span class="kw">import</span> <span class="lib">numpy</span> <span class="kw">as</span> <span class="var">np</span>
-
-<span class="cm"># 读取 CSV 数据</span>
-<span class="var">df</span> = <span class="var">pd</span>.<span class="fn">read_csv</span>(<span class="str">'students.csv'</span>)
-
-<span class="cm"># 查看基本信息</span>
-<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">shape</span>)        <span class="cm"># (行数, 列数)</span>
-<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">dtypes</span>)       <span class="cm"># 每列数据类型</span>
-<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">head</span>(<span class="num">5</span>))      <span class="cm"># 前5行</span>
-
-<span class="cm"># 统计摘要</span>
-<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">describe</span>())
-
-<span class="cm"># 检查缺失值</span>
-<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">isnull</span>().<span class="fn">sum</span>())
-
-<span class="cm"># 各科均值</span>
-<span class="var">avg</span> = <span class="var">df</span>[[<span class="str">'数学'</span>, <span class="str">'英语'</span>, <span class="str">'语文'</span>]].<span class="fn">mean</span>()
-<span class="fn">print</span>(<span class="var">avg</span>)</pre>
-        </div>
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;">
-          <div style="font-size:.85rem;color:var(--muted);margin-bottom:12px;">📌 关键 API 速查</div>
-          <div class="tbl-wrap">
-            <table>
-              <tr><th>方法</th><th>作用</th></tr>
-              <tr><td><code style="color:#60a5fa;">read_csv()</code></td><td>读取 CSV 文件</td></tr>
-              <tr><td><code style="color:#60a5fa;">df.shape</code></td><td>返回 (行, 列) 元组</td></tr>
-              <tr><td><code style="color:#60a5fa;">df.describe()</code></td><td>数值列统计摘要</td></tr>
-              <tr><td><code style="color:#60a5fa;">df.isnull()</code></td><td>检测缺失值</td></tr>
-              <tr><td><code style="color:#60a5fa;">df.dtypes</code></td><td>每列数据类型</td></tr>
-              <tr><td><code style="color:#60a5fa;">df.head(n)</code></td><td>查看前 n 行</td></tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 示例2：数据清洗 -->
-    <div style="margin-bottom:32px;">
-      <h3 style="margin-bottom:16px;color:#fbbf24;font-size:1rem;">② 数据清洗 &amp; 预处理</h3>
-      <div class="code-section">
-        <div class="code-block">
-          <div class="code-header">
-            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-            <span class="code-filename">02_data_cleaning.py</span>
-          </div>
-          <pre><span class="cm"># 填充缺失值</span>
-<span class="var">df</span>[<span class="str">'成绩'</span>].<span class="fn">fillna</span>(<span class="var">df</span>[<span class="str">'成绩'</span>].<span class="fn">mean</span>(), <span class="var">inplace</span>=<span class="kw">True</span>)
-
-<span class="cm"># 删除含缺失值的行</span>
-<span class="var">df</span>.<span class="fn">dropna</span>(<span class="var">subset</span>=[<span class="str">'姓名'</span>, <span class="str">'班级'</span>], <span class="var">inplace</span>=<span class="kw">True</span>)
-
-<span class="cm"># 删除重复行</span>
-<span class="var">df</span>.<span class="fn">drop_duplicates</span>(<span class="var">inplace</span>=<span class="kw">True</span>)
-
-<span class="cm"># 数据类型转换</span>
-<span class="var">df</span>[<span class="str">'成绩'</span>] = <span class="var">df</span>[<span class="str">'成绩'</span>].<span class="fn">astype</span>(<span class="fn">float</span>)
-<span class="var">df</span>[<span class="str">'日期'</span>] = <span class="var">pd</span>.<span class="fn">to_datetime</span>(<span class="var">df</span>[<span class="str">'日期'</span>])
-
-<span class="cm"># 过滤异常值（Z-score法）</span>
-<span class="var">z</span> = (<span class="var">df</span>[<span class="str">'成绩'</span>] - <span class="var">df</span>[<span class="str">'成绩'</span>].<span class="fn">mean</span>()) / <span class="var">df</span>[<span class="str">'成绩'</span>].<span class="fn">std</span>()
-<span class="var">df</span> = <span class="var">df</span>[<span class="var">z</span>.<span class="fn">abs</span>() &lt;= <span class="num">3</span>]
-
-<span class="cm"># 重命名列</span>
-<span class="var">df</span>.<span class="fn">rename</span>(<span class="var">columns</span>={<span class="str">'score'</span>: <span class="str">'成绩'</span>}, <span class="var">inplace</span>=<span class="kw">True</span>)</pre>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:14px;">
-            <div style="color:#f87171;font-weight:700;margin-bottom:6px;font-size:.85rem;">⚠️ 缺失值处理策略</div>
-            <div style="font-size:.82rem;color:var(--muted);">
-              <div>• <strong style="color:var(--text);">均值/中位数填充</strong>：适合数值型数据，保留样本</div>
-              <div style="margin-top:4px;">• <strong style="color:var(--text);">众数填充</strong>：适合分类型数据</div>
-              <div style="margin-top:4px;">• <strong style="color:var(--text);">前向/后向填充</strong>：适合时序数据</div>
-              <div style="margin-top:4px;">• <strong style="color:var(--text);">直接删除</strong>：缺失率低且随机缺失时</div>
-            </div>
-          </div>
-          <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:10px;padding:14px;">
-            <div style="color:#fbbf24;font-weight:700;margin-bottom:6px;font-size:.85rem;">💡 异常值检测方法</div>
-            <div style="font-size:.82rem;color:var(--muted);">
-              <div>• <strong style="color:var(--text);">Z-score法</strong>：|z| &gt; 3 视为异常（正态分布）</div>
-              <div style="margin-top:4px;">• <strong style="color:var(--text);">IQR法</strong>：超出 Q1-1.5×IQR 或 Q3+1.5×IQR</div>
-              <div style="margin-top:4px;">• <strong style="color:var(--text);">业务规则</strong>：如成绩必须在 0~100</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 示例3：可视化 -->
-    <div>
-      <h3 style="margin-bottom:16px;color:#34d399;font-size:1rem;">③ 数据可视化代码</h3>
-      <div class="code-section">
-        <div class="code-block">
-          <div class="code-header">
-            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-            <span class="code-filename">03_visualization.py</span>
-          </div>
-          <pre><span class="kw">import</span> <span class="lib">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>
-<span class="kw">import</span> <span class="lib">seaborn</span> <span class="kw">as</span> <span class="var">sns</span>
-
-<span class="cm"># 设置中文字体</span>
-<span class="var">plt</span>.<span class="fn">rcParams</span>[<span class="str">'font.sans-serif'</span>] = [<span class="str">'SimHei'</span>]
-
-<span class="cm"># 1. 折线图（趋势）</span>
-<span class="var">plt</span>.<span class="fn">plot</span>(<span class="var">df</span>[<span class="str">'月份'</span>], <span class="var">df</span>[<span class="str">'销售额'</span>],
-         <span class="var">marker</span>=<span class="str">'o'</span>, <span class="var">color</span>=<span class="str">'#3b82f6'</span>)
-<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">'月度销售趋势'</span>)
-
-<span class="cm"># 2. 热力图（相关性）</span>
-<span class="var">corr</span> = <span class="var">df</span>.<span class="fn">corr</span>()
-<span class="var">sns</span>.<span class="fn">heatmap</span>(<span class="var">corr</span>, <span class="var">annot</span>=<span class="kw">True</span>,
-             <span class="var">cmap</span>=<span class="str">'coolwarm'</span>, <span class="var">center</span>=<span class="num">0</span>)
-
-<span class="cm"># 3. 箱线图（分布）</span>
-<span class="var">sns</span>.<span class="fn">boxplot</span>(<span class="var">x</span>=<span class="str">'班级'</span>, <span class="var">y</span>=<span class="str">'成绩'</span>, <span class="var">data</span>=<span class="var">df</span>,
-             <span class="var">palette</span>=<span class="str">'Set2'</span>)
-
-<span class="cm"># 4. 散点回归图</span>
-<span class="var">sns</span>.<span class="fn">regplot</span>(<span class="var">x</span>=<span class="str">'学习时长'</span>, <span class="var">y</span>=<span class="str">'成绩'</span>,
-             <span class="var">data</span>=<span class="var">df</span>, <span class="var">scatter_kws</span>={<span class="str">'alpha'</span>:<span class="num">0.5</span>})
-
-<span class="var">plt</span>.<span class="fn">tight_layout</span>()
-<span class="var">plt</span>.<span class="fn">savefig</span>(<span class="str">'analysis.png'</span>, <span class="var">dpi</span>=<span class="num">150</span>)</pre>
-        </div>
-
-        <!-- 图表类型速查 -->
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;">
-          <div style="font-size:.85rem;color:var(--muted);margin-bottom:12px;">📊 常见图表选择指南</div>
-          <div class="tbl-wrap">
-            <table>
-              <tr><th>数据目的</th><th>推荐图表</th><th>函数</th></tr>
-              <tr><td>时间趋势</td><td>折线图</td><td><code style="color:#60a5fa;">plt.plot()</code></td></tr>
-              <tr><td>类别比较</td><td>柱状图</td><td><code style="color:#60a5fa;">plt.bar()</code></td></tr>
-              <tr><td>分布形状</td><td>直方图</td><td><code style="color:#60a5fa;">plt.hist()</code></td></tr>
-              <tr><td>相关关系</td><td>散点图</td><td><code style="color:#60a5fa;">plt.scatter()</code></td></tr>
-              <tr><td>变量相关</td><td>热力图</td><td><code style="color:#60a5fa;">sns.heatmap()</code></td></tr>
-              <tr><td>离群值</td><td>箱线图</td><td><code style="color:#60a5fa;">sns.boxplot()</code></td></tr>
-              <tr><td>占比构成</td><td>饼图</td><td><code style="color:#60a5fa;">plt.pie()</code></td></tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- ===== SVG 可视化图解 ===== -->
-<section style="background:#111827;">
-  <div class="container">
-    <div class="section-title">📈 可视化图表图解</div>
-    <div class="section-sub">常用 Python 数据可视化图表类型演示</div>
-
-    <div class="visual-grid">
-
-      <!-- 柱状图 -->
-      <div class="visual-card">
-        <div class="visual-chart">
-          <svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
-            <defs>
-              <linearGradient id="bar1" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient>
-              <linearGradient id="bar2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#065f46"/></linearGradient>
-              <linearGradient id="bar3" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#6b21a8"/></linearGradient>
-              <linearGradient id="bar4" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#92400e"/></linearGradient>
-              <linearGradient id="bar5" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#991b1b"/></linearGradient>
-            </defs>
-            <!-- grid lines -->
-            <line x1="40" y1="20" x2="40" y2="145" stroke="#334155" stroke-width="1"/>
-            <line x1="40" y1="145" x2="290" y2="145" stroke="#334155" stroke-width="1"/>
-            <line x1="40" y1="60" x2="290" y2="60" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,3"/>
-            <line x1="40" y1="100" x2="290" y2="100" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,3"/>
-            <!-- bars -->
-            <rect x="55"  y="75"  width="32" height="70" rx="4" fill="url(#bar1)"/>
-            <rect x="105" y="55"  width="32" height="90" rx="4" fill="url(#bar2)"/>
-            <rect x="155" y="90"  width="32" height="55" rx="4" fill="url(#bar3)"/>
-            <rect x="205" y="40"  width="32" height="105" rx="4" fill="url(#bar4)"/>
-            <rect x="255" y="65"  width="32" height="80" rx="4" fill="url(#bar5)"/>
-            <!-- labels -->
-            <text x="71"  y="158" text-anchor="middle" class="chart-label">语文</text>
-            <text x="121" y="158" text-anchor="middle" class="chart-label">数学</text>
-            <text x="171" y="158" text-anchor="middle" class="chart-label">英语</text>
-            <text x="221" y="158" text-anchor="middle" class="chart-label">物理</text>
-            <text x="271" y="158" text-anchor="middle" class="chart-label">化学</text>
-            <!-- values -->
-            <text x="71"  y="70"  text-anchor="middle" class="chart-val">82</text>
-            <text x="121" y="50"  text-anchor="middle" class="chart-val">91</text>
-            <text x="171" y="85"  text-anchor="middle" class="chart-val">76</text>
-            <text x="221" y="35"  text-anchor="middle" class="chart-val">95</text>
-            <text x="271" y="60"  text-anchor="middle" class="chart-val">88</text>
-            <text x="165" y="12"  text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="bold">各科平均分对比</text>
-          </svg>
-        </div>
-        <div class="visual-info">
-          <div class="visual-title">柱状图 (Bar Chart)</div>
-          <div class="visual-desc">用于比较不同类别的数值大小，适合展示各组之间的对比关系。代码：<code style="color:#60a5fa;">plt.bar()</code></div>
-        </div>
-      </div>
-
-      <!-- 折线图 -->
-      <div class="visual-card">
-        <div class="visual-chart">
-          <svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
-            <defs>
-              <linearGradient id="linegrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#3b82f6" stop-opacity=".3"/>
-                <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <!-- grid -->
-            <line x1="35" y1="20" x2="35" y2="145" stroke="#334155" stroke-width="1"/>
-            <line x1="35" y1="145" x2="285" y2="145" stroke="#334155" stroke-width="1"/>
-            <line x1="35" y1="50"  x2="285" y2="50"  stroke="#1e293b" stroke-width="1" stroke-dasharray="4,3"/>
-            <line x1="35" y1="95"  x2="285" y2="95"  stroke="#1e293b" stroke-width="1" stroke-dasharray="4,3"/>
-            <!-- area fill -->
-            <polygon points="35,145 60,115 110,90 160,70 210,55 260,75 285,60 285,145" fill="url(#linegrad)"/>
-            <!-- line -->
-            <polyline points="60,115 110,90 160,70 210,55 260,75 285,60" stroke="#3b82f6" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
-            <!-- second line -->
-            <polyline points="60,130 110,118 160,105 210,98 260,88 285,95" stroke="#10b981" stroke-width="2" fill="none" stroke-linejoin="round" stroke-dasharray="5,3"/>
-            <!-- dots -->
-            <circle cx="60"  cy="115" r="4" fill="#3b82f6"/>
-            <circle cx="110" cy="90"  r="4" fill="#3b82f6"/>
-            <circle cx="160" cy="70"  r="4" fill="#3b82f6"/>
-            <circle cx="210" cy="55"  r="4" fill="#3b82f6"/>
-            <circle cx="260" cy="75"  r="4" fill="#3b82f6"/>
-            <circle cx="285" cy="60"  r="4" fill="#3b82f6"/>
-            <!-- labels -->
-            <text x="60"  y="158" text-anchor="middle" class="chart-label">1月</text>
-            <text x="110" y="158" text-anchor="middle" class="chart-label">2月</text>
-            <text x="160" y="158" text-anchor="middle" class="chart-label">3月</text>
-            <text x="210" y="158" text-anchor="middle" class="chart-label">4月</text>
-            <text x="260" y="158" text-anchor="middle" class="chart-label">5月</text>
-            <!-- legend -->
-            <line x1="50" y1="12" x2="70" y2="12" stroke="#3b82f6" stroke-width="2"/>
-            <text x="75" y="15" fill="#94a3b8" font-size="9">今年</text>
-            <line x1="115" y1="12" x2="135" y2="12" stroke="#10b981" stroke-width="2" stroke-dasharray="5,3"/>
-            <text x="140" y="15" fill="#94a3b8" font-size="9">去年</text>
-            <text x="165" y="12" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="bold">月度销售趋势</text>
-          </svg>
-        </div>
-        <div class="visual-info">
-          <div class="visual-title">折线图 (Line Chart)</div>
-          <div class="visual-desc">展示数据随时间的变化趋势，支持多系列对比。代码：<code style="color:#60a5fa;">plt.plot()</code></div>
-        </div>
-      </div>
-
-      <!-- 散点图 + 回归线 -->
-      <div class="visual-card">
-        <div class="visual-chart">
-          <svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
-            <!-- grid -->
-            <line x1="35" y1="15" x2="35" y2="145" stroke="#334155" stroke-width="1"/>
-            <line x1="35" y1="145" x2="285" y2="145" stroke="#334155" stroke-width="1"/>
-            <line x1="35" y1="55"  x2="285" y2="55"  stroke="#1e293b" stroke-width="1" stroke-dasharray="4,3"/>
-            <line x1="35" y1="100" x2="285" y2="100" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,3"/>
-            <!-- regression line -->
-            <line x1="50" y1="128" x2="275" y2="30" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="6,3" opacity=".8"/>
-            <!-- scatter points -->
-            <circle cx="60"  cy="120" r="5" fill="#6366f1" opacity=".8"/>
-            <circle cx="80"  cy="108" r="5" fill="#6366f1" opacity=".8"/>
-            <circle cx="95"  cy="105" r="5" fill="#6366f1" opacity=".8"/>
-            <circle cx="115" cy="90"  r="5" fill="#6366f1" opacity=".8"/>
-            <circle cx="130" cy="88"  r="5" fill="#6366f1" opacity=".8"/>
-            <circle cx="150" cy="72"  r="5" fill="#a855f7" opacity=".8"/>
-            <circle cx="165" cy="68"  r="5" fill="#a855f7" opacity=".8"/>
-            <circle cx="180" cy="62"  r="5" fill="#a855f7" opacity=".8"/>
-            <circle cx="200" cy="58"  r="5" fill="#a855f7" opacity=".8"/>
-            <circle cx="220" cy="50"  r="5" fill="#a855f7" opacity=".8"/>
-            <circle cx="240" cy="48"  r="5" fill="#ec4899" opacity=".8"/>
-            <circle cx="260" cy="38"  r="5" fill="#ec4899" opacity=".8"/>
-            <!-- outlier -->
-            <circle cx="100" cy="130" r="5" fill="#f59e0b" opacity=".9"/>
-            <line x1="100" y1="125" x2="90" y2="115" stroke="#f59e0b" stroke-width="1"/>
-            <text x="82" y="112" fill="#f59e0b" font-size="8">异常值</text>
-            <!-- axis labels -->
-            <text x="160" y="160" text-anchor="middle" class="chart-label">学习时长 (小时)</text>
-            <text x="18"  y="82"  text-anchor="middle" class="chart-label" transform="rotate(-90,18,82)">成绩</text>
-            <!-- R² -->
-            <text x="260" y="138" fill="#ef4444" font-size="9">R²=0.87</text>
-            <text x="165" y="12"  text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="bold">学习时长 vs 成绩散点图</text>
-          </svg>
-        </div>
-        <div class="visual-info">
-          <div class="visual-title">散点图 + 回归线 (Scatter + Regression)</div>
-          <div class="visual-desc">展示两个变量之间的相关关系，回归线显示趋势，R² 值衡量拟合度。代码：<code style="color:#60a5fa;">sns.regplot()</code></div>
-        </div>
-      </div>
-
-      <!-- 热力图 -->
-      <div class="visual-card">
-        <div class="visual-chart">
-          <svg viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
-            <!-- Heatmap cells 5x5 -->
-            <!-- row labels -->
-            <text x="48" y="52" text-anchor="end" class="chart-label">语文</text>
-            <text x="48" y="82" text-anchor="end" class="chart-label">数学</text>
-            <text x="48" y="112" text-anchor="end" class="chart-label">英语</text>
-            <text x="48" y="142" text-anchor="end" class="chart-label">物理</text>
-            <text x="48" y="172" text-anchor="end" class="chart-label">化学</text>
-            <!-- col labels -->
-            <text x="72"  y="22" text-anchor="middle" class="chart-label">语文</text>
-            <text x="112" y="22" text-anchor="middle" class="chart-label">数学</text>
-            <text x="152" y="22" text-anchor="middle" class="chart-label">英语</text>
-            <text x="192" y="22" text-anchor="middle" class="chart-label">物理</text>
-            <text x="232" y="22" text-anchor="middle" class="chart-label">化学</text>
-            <!-- Row 1 -->
-            <rect x="52" y="30" width="38" height="28" rx="3" fill="#b91c1c"/>
-            <rect x="92" y="30" width="38" height="28" rx="3" fill="#3d6e8a"/>
-            <rect x="132" y="30" width="38" height="28" rx="3" fill="#5b8ea0"/>
-            <rect x="172" y="30" width="38" height="28" rx="3" fill="#2a5a72"/>
-            <rect x="212" y="30" width="38" height="28" rx="3" fill="#1e4a62"/>
-            <!-- Row 2 -->
-            <rect x="52" y="60" width="38" height="28" rx="3" fill="#3d6e8a"/>
-            <rect x="92" y="60" width="38" height="28" rx="3" fill="#b91c1c"/>
-            <rect x="132" y="60" width="38" height="28" rx="3" fill="#a03030"/>
-            <rect x="172" y="60" width="38" height="28" rx="3" fill="#8b4040"/>
-            <rect x="212" y="60" width="38" height="28" rx="3" fill="#7a5050"/>
-            <!-- Row 3 -->
-            <rect x="52" y="90" width="38" height="28" rx="3" fill="#5b8ea0"/>
-            <rect x="92" y="90" width="38" height="28" rx="3" fill="#a03030"/>
-            <rect x="132" y="90" width="38" height="28" rx="3" fill="#b91c1c"/>
-            <rect x="172" y="90" width="38" height="28" rx="3" fill="#956060"/>
-            <rect x="212" y="90" width="38" height="28" rx="3" fill="#2a5a72"/>
-            <!-- Row 4 -->
-            <rect x="52" y="120" width="38" height="28" rx="3" fill="#2a5a72"/>
-            <rect x="92" y="120" width="38" height="28" rx="3" fill="#8b4040"/>
-            <rect x="132" y="120" width="38" height="28" rx="3" fill="#956060"/>
-            <rect x="172" y="120" width="38" height="28" rx="3" fill="#b91c1c"/>
-            <rect x="212" y="120" width="38" height="28" rx="3" fill="#7a8090"/>
-            <!-- Row 5 -->
-            <rect x="52" y="150" width="38" height="28" rx="3" fill="#1e4a62"/>
-            <rect x="92" y="150" width="38" height="28" rx="3" fill="#7a5050"/>
-            <rect x="132" y="150" width="38" height="28" rx="3" fill="#2a5a72"/>
-            <rect x="172" y="150" width="38" height="28" rx="3" fill="#7a8090"/>
-            <rect x="212" y="150" width="38" height="28" rx="3" fill="#b91c1c"/>
-            <!-- cell values (diag = 1.0) -->
-            <text x="71" y="49" text-anchor="middle" class="chart-val">1.0</text>
-            <text x="111" y="79" text-anchor="middle" class="chart-val">1.0</text>
-            <text x="151" y="109" text-anchor="middle" class="chart-val">1.0</text>
-            <text x="191" y="139" text-anchor="middle" class="chart-val">1.0</text>
-            <text x="231" y="169" text-anchor="middle" class="chart-val">1.0</text>
-            <text x="111" y="49" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">0.32</text>
-            <text x="151" y="49" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">0.45</text>
-            <text x="71" y="79" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">0.32</text>
-            <text x="151" y="79" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">0.71</text>
-            <text x="191" y="79" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">0.68</text>
-          </svg>
-        </div>
-        <div class="visual-info">
-          <div class="visual-title">热力图 (Heatmap)</div>
-          <div class="visual-desc">用颜色深浅表示变量间的相关系数，快速发现强相关特征对。代码：<code style="color:#60a5fa;">sns.heatmap(df.corr())</code></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- ===== 机器学习流程 ===== -->
-<section>
-  <div class="container">
-    <div class="section-title">🤖 从数据到模型</div>
-    <div class="section-sub">Scikit-learn 标准机器学习工作流详解</div>
-
-    <div class="code-section" style="margin-bottom:32px;">
-      <div class="code-block">
-        <div class="code-header">
-          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-          <span class="code-filename">04_machine_learning.py</span>
-        </div>
-        <pre><span class="kw">from</span> <span class="lib">sklearn.model_selection</span> <span class="kw">import</span> <span class="fn">train_test_split</span>
-<span class="kw">from</span> <span class="lib">sklearn.preprocessing</span> <span class="kw">import</span> <span class="fn">StandardScaler</span>
-<span class="kw">from</span> <span class="lib">sklearn.linear_model</span> <span class="kw">import</span> <span class="fn">LinearRegression</span>
-<span class="kw">from</span> <span class="lib">sklearn.ensemble</span> <span class="kw">import</span> <span class="fn">RandomForestClassifier</span>
-<span class="kw">from</span> <span class="lib">sklearn.metrics</span> <span class="kw">import</span> <span class="fn">accuracy_score</span>, <span class="fn">r2_score</span>
-
-<span class="cm"># ① 准备特征和标签</span>
-<span class="var">X</span> = <span class="var">df</span>[[<span class="str">'学习时长'</span>, <span class="str">'出勤率'</span>, <span class="str">'作业完成率'</span>]]
-<span class="var">y</span> = <span class="var">df</span>[<span class="str">'是否优秀'</span>]
-
-<span class="cm"># ② 划分训练集和测试集</span>
-<span class="var">X_train</span>, <span class="var">X_test</span>, <span class="var">y_train</span>, <span class="var">y_test</span> = <span class="fn">train_test_split</span>(
-    <span class="var">X</span>, <span class="var">y</span>, <span class="var">test_size</span>=<span class="num">0.2</span>, <span class="var">random_state</span>=<span class="num">42</span>)
-
-<span class="cm"># ③ 特征标准化</span>
-<span class="var">scaler</span> = <span class="fn">StandardScaler</span>()
-<span class="var">X_train</span> = <span class="var">scaler</span>.<span class="fn">fit_transform</span>(<span class="var">X_train</span>)
-<span class="var">X_test</span>  = <span class="var">scaler</span>.<span class="fn">transform</span>(<span class="var">X_test</span>)
-
-<span class="cm"># ④ 训练模型</span>
-<span class="var">model</span> = <span class="fn">RandomForestClassifier</span>(<span class="var">n_estimators</span>=<span class="num">100</span>)
-<span class="var">model</span>.<span class="fn">fit</span>(<span class="var">X_train</span>, <span class="var">y_train</span>)
-
-<span class="cm"># ⑤ 预测与评估</span>
-<span class="var">y_pred</span> = <span class="var">model</span>.<span class="fn">predict</span>(<span class="var">X_test</span>)
-<span class="fn">print</span>(<span class="fn">accuracy_score</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>))  <span class="cm"># 0.92</span></pre>
-      </div>
-
-      <!-- 算法对比 -->
-      <div>
-        <div class="cmp-grid">
-          <div class="cmp-card">
-            <div class="cmp-title" style="color:#60a5fa;">🔵 监督学习算法</div>
-            <div class="cmp-item"><span class="cmp-icon">📈</span><div><strong>线性回归</strong> — 连续值预测，可解释性强</div></div>
-            <div class="cmp-item"><span class="cmp-icon">🌲</span><div><strong>随机森林</strong> — 分类/回归，抗过拟合</div></div>
-            <div class="cmp-item"><span class="cmp-icon">🎯</span><div><strong>SVM</strong> — 高维数据，效果稳定</div></div>
-            <div class="cmp-item"><span class="cmp-icon">🧠</span><div><strong>XGBoost</strong> — 竞赛利器，效果卓越</div></div>
-          </div>
-          <div class="cmp-card">
-            <div class="cmp-title" style="color:#34d399;">🟢 无监督学习算法</div>
-            <div class="cmp-item"><span class="cmp-icon">🔵</span><div><strong>K-Means</strong> — 聚类分析，简单高效</div></div>
-            <div class="cmp-item"><span class="cmp-icon">📉</span><div><strong>PCA</strong> — 降维，去除冗余特征</div></div>
-            <div class="cmp-item"><span class="cmp-icon">🕸️</span><div><strong>DBSCAN</strong> — 密度聚类，检测异常</div></div>
-            <div class="cmp-item"><span class="cmp-icon">🗺️</span><div><strong>t-SNE</strong> — 高维可视化降维</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 模型评估指标 -->
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;">
-      <div style="font-size:1rem;font-weight:700;margin-bottom:16px;">📐 模型评估指标速查</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">
-        <div style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:14px;">
-          <div style="color:#60a5fa;font-weight:700;margin-bottom:6px;">分类任务</div>
-          <div style="font-size:.82rem;color:var(--muted);">
-            <div>• <strong style="color:var(--text);">准确率</strong> accuracy_score</div>
-            <div>• <strong style="color:var(--text);">精确率</strong> precision_score</div>
-            <div>• <strong style="color:var(--text);">召回率</strong> recall_score</div>
-            <div>• <strong style="color:var(--text);">F1</strong> f1_score</div>
-          </div>
-        </div>
-        <div style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px;">
-          <div style="color:#34d399;font-weight:700;margin-bottom:6px;">回归任务</div>
-          <div style="font-size:.82rem;color:var(--muted);">
-            <div>• <strong style="color:var(--text);">R²</strong> r2_score</div>
-            <div>• <strong style="color:var(--text);">MAE</strong> mean_absolute_error</div>
-            <div>• <strong style="color:var(--text);">MSE</strong> mean_squared_error</div>
-            <div>• <strong style="color:var(--text);">RMSE</strong> √MSE</div>
-          </div>
-        </div>
-        <div style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:10px;padding:14px;">
-          <div style="color:#c084fc;font-weight:700;margin-bottom:6px;">验证方法</div>
-          <div style="font-size:.82rem;color:var(--muted);">
-            <div>• <strong style="color:var(--text);">Hold-out</strong> 简单划分</div>
-            <div>• <strong style="color:var(--text);">K-fold CV</strong> 交叉验证</div>
-            <div>• <strong style="color:var(--text);">Learning curve</strong> 诊断偏差/方差</div>
-            <div>• <strong style="color:var(--text);">混淆矩阵</strong> 分类详情</div>
-          </div>
-        </div>
+      <div class="card" style="border-color:#10b981">
+        <div style="font-size:2rem;margin-bottom:10px">📤</div>
+        <h3 style="margin-bottom:8px;color:#6ee7b7">输出</h3>
+        <p style="color:var(--muted);font-size:.9rem">结构化数据，可用于分析、可视化或机器学习</p>
       </div>
     </div>
   </div>
@@ -1107,93 +460,699 @@
 
 <div class="divider"></div>
 
-<!-- ===== 学习路径 ===== -->
-<section style="background:#111827;">
+<!-- ───────────── 2. 数据来源 ───────────── -->
+<section id="sources">
   <div class="container">
-    <div class="section-title">🗺️ 学习路径建议</div>
-    <div class="section-sub">从零基础到数据分析工程师的系统学习路线</div>
-
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <h3>Python 基础语法（2-4周）</h3>
-          <p>变量与数据类型、列表/字典/元组、函数与类、文件读写、异常处理。推荐资源：《Python编程：从入门到实践》</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <h3>NumPy 与 Pandas 基础（2-3周）</h3>
-          <p>数组操作、DataFrame 增删改查、数据合并（merge/concat）、分组聚合（groupby）、时间序列处理。</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <h3>数据可视化（1-2周）</h3>
-          <p>Matplotlib 基础绘图、Seaborn 统计图表、图表美化技巧、交互式图表（Plotly/Pyecharts）。</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <div class="step-body">
-          <h3>统计分析基础（2-3周）</h3>
-          <p>描述统计、概率分布、假设检验、相关分析、方差分析。工具：SciPy、Statsmodels。</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">5</div>
-        <div class="step-body">
-          <h3>机器学习入门（4-6周）</h3>
-          <p>Scikit-learn 工作流、线性模型/树模型/集成模型、特征工程、模型选择与调参。推荐：Kaggle 入门竞赛练习。</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">6</div>
-        <div class="step-body">
-          <h3>实战项目（持续）</h3>
-          <p>完成 2-3 个端到端项目（销售分析、用户画像、预测模型），整理到 GitHub，参加 Kaggle 竞赛。</p>
-        </div>
-      </div>
+    <div class="section-title">
+      <span class="icon icon-cyan">📡</span>
+      数据从哪里来？
     </div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- ===== 常用操作速查表 ===== -->
-<section>
-  <div class="container">
-    <div class="section-title">📋 Pandas 常用操作速查</div>
-    <div class="section-sub">日常数据分析中最常用的 Pandas 操作汇总</div>
+    <p class="section-sub">了解不同来源的特点，选择合适的采集方式</p>
 
     <div class="tbl-wrap">
       <table>
-        <tr>
-          <th>操作类型</th>
-          <th>代码示例</th>
-          <th>说明</th>
-        </tr>
-        <tr><td>读取数据</td><td><code style="color:#60a5fa;">pd.read_csv('f.csv', encoding='utf-8')</code></td><td>读取 CSV，指定编码</td></tr>
-        <tr><td>选择列</td><td><code style="color:#60a5fa;">df[['A','B']]</code></td><td>选取多列</td></tr>
-        <tr><td>条件过滤</td><td><code style="color:#60a5fa;">df[df['成绩'] > 80]</code></td><td>按条件筛选行</td></tr>
-        <tr><td>新增列</td><td><code style="color:#60a5fa;">df['总分'] = df['数学'] + df['语文']</code></td><td>通过计算新增列</td></tr>
-        <tr><td>分组聚合</td><td><code style="color:#60a5fa;">df.groupby('班级')['成绩'].mean()</code></td><td>按班级求均值</td></tr>
-        <tr><td>数据合并</td><td><code style="color:#60a5fa;">pd.merge(df1, df2, on='学号')</code></td><td>按学号内连接</td></tr>
-        <tr><td>透视表</td><td><code style="color:#60a5fa;">df.pivot_table(values='成绩', index='班级', columns='科目', aggfunc='mean')</code></td><td>多维聚合</td></tr>
-        <tr><td>排序</td><td><code style="color:#60a5fa;">df.sort_values('成绩', ascending=False)</code></td><td>按成绩降序</td></tr>
-        <tr><td>应用函数</td><td><code style="color:#60a5fa;">df['等级'] = df['成绩'].apply(lambda x: '优' if x>=90 else '良')</code></td><td>自定义映射</td></tr>
-        <tr><td>导出数据</td><td><code style="color:#60a5fa;">df.to_excel('result.xlsx', index=False)</code></td><td>导出 Excel</td></tr>
+        <thead>
+          <tr>
+            <th>来源类型</th>
+            <th>典型例子</th>
+            <th>常用工具</th>
+            <th>难度</th>
+            <th>支持格式</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🌐 网页数据</td>
+            <td>商品信息、新闻、排行榜</td>
+            <td>requests + BeautifulSoup</td>
+            <td>⭐⭐</td>
+            <td><span class="fmt-badge fmt-html">HTML</span></td>
+          </tr>
+          <tr>
+            <td>📁 本地文件</td>
+            <td>成绩表、销售记录、日志</td>
+            <td>pandas、open()</td>
+            <td>⭐</td>
+            <td>
+              <span class="fmt-badge fmt-csv">CSV</span>
+              <span class="fmt-badge fmt-excel">Excel</span>
+              <span class="fmt-badge fmt-json">JSON</span>
+            </td>
+          </tr>
+          <tr>
+            <td>🔌 API 接口</td>
+            <td>天气、股票、地图、翻译</td>
+            <td>requests</td>
+            <td>⭐⭐</td>
+            <td><span class="fmt-badge fmt-json">JSON</span></td>
+          </tr>
+          <tr>
+            <td>🗄️ 数据库</td>
+            <td>MySQL、SQLite、MongoDB</td>
+            <td>pymysql、sqlite3</td>
+            <td>⭐⭐⭐</td>
+            <td><span class="fmt-badge fmt-sql">SQL</span></td>
+          </tr>
+          <tr>
+            <td>📡 实时流</td>
+            <td>传感器数据、微博热搜</td>
+            <td>Kafka、WebSocket</td>
+            <td>⭐⭐⭐⭐</td>
+            <td><span class="fmt-badge fmt-json">JSON</span></td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<!-- ===== FOOTER ===== -->
+<div class="divider"></div>
+
+<!-- ───────────── 3. 常用库 ───────────── -->
+<section id="libs">
+  <div class="container">
+    <div class="section-title">
+      <span class="icon icon-amber">📦</span>
+      必学的 Python 库
+    </div>
+    <p class="section-sub">掌握这几个库，就能完成 90% 的数据采集任务</p>
+
+    <div class="card-grid card-grid-3">
+      <div class="lib-card">
+        <div class="lib-icon" style="background:rgba(239,68,68,.15)">🌐</div>
+        <h3>requests</h3>
+        <p>发送 HTTP 请求，获取网页内容或调用 API。最基础、最常用的库。</p>
+        <span class="lib-badge">网络请求</span>
+      </div>
+      <div class="lib-card">
+        <div class="lib-icon" style="background:rgba(16,185,129,.15)">🍲</div>
+        <h3>BeautifulSoup4</h3>
+        <p>解析 HTML/XML 文档，轻松提取标签内容、属性、链接等。</p>
+        <span class="lib-badge">HTML解析</span>
+      </div>
+      <div class="lib-card">
+        <div class="lib-icon" style="background:rgba(99,102,241,.15)">🐼</div>
+        <h3>pandas</h3>
+        <p>读取 CSV、Excel 等文件，强大的数据处理与分析框架。</p>
+        <span class="lib-badge">数据处理</span>
+      </div>
+      <div class="lib-card">
+        <div class="lib-icon" style="background:rgba(245,158,11,.15)">🕷️</div>
+        <h3>Scrapy</h3>
+        <p>专业爬虫框架，支持并发采集、自动翻页、数据管道等高级功能。</p>
+        <span class="lib-badge">爬虫框架</span>
+      </div>
+      <div class="lib-card">
+        <div class="lib-icon" style="background:rgba(6,182,212,.15)">🤖</div>
+        <h3>Selenium</h3>
+        <p>操控浏览器，适合需要登录、点击、滚动等 JavaScript 动态页面。</p>
+        <span class="lib-badge">动态页面</span>
+      </div>
+      <div class="lib-card">
+        <div class="lib-icon" style="background:rgba(139,92,246,.15)">🗂️</div>
+        <h3>sqlite3 / pymysql</h3>
+        <p>连接 SQLite / MySQL 数据库，执行 SQL 查询，读写数据。</p>
+        <span class="lib-badge">数据库</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ───────────── 4. 安装 ───────────── -->
+<section id="install">
+  <div class="container">
+    <div class="section-title">
+      <span class="icon icon-green">🛠️</span>
+      环境安装（第一步必做）
+    </div>
+    <p class="section-sub">打开终端（CMD / PowerShell / Anaconda Prompt），依次执行以下命令</p>
+
+    <div class="card">
+      <!-- SVG：安装流程 -->
+      <svg viewBox="0 0 760 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;margin-bottom:20px">
+        <defs>
+          <marker id="a1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#64748b"/>
+          </marker>
+        </defs>
+        <!-- 节点 -->
+        <rect x="10"  y="25" width="130" height="50" rx="10" fill="#1e3a2a" stroke="#22c55e" stroke-width="1.5"/>
+        <text x="75"  y="46" text-anchor="middle" fill="#86efac" font-size="12" font-weight="bold">① 安装 Python</text>
+        <text x="75"  y="62" text-anchor="middle" fill="#4ade80" font-size="10">python.org</text>
+
+        <line x1="142" y1="50" x2="178" y2="50" stroke="#64748b" stroke-width="1.5" marker-end="url(#a1)"/>
+
+        <rect x="180" y="25" width="130" height="50" rx="10" fill="#1e293b" stroke="#4f46e5" stroke-width="1.5"/>
+        <text x="245" y="46" text-anchor="middle" fill="#a5b4fc" font-size="12" font-weight="bold">② pip 安装库</text>
+        <text x="245" y="62" text-anchor="middle" fill="#818cf8" font-size="10">pip install ...</text>
+
+        <line x1="312" y1="50" x2="348" y2="50" stroke="#64748b" stroke-width="1.5" marker-end="url(#a1)"/>
+
+        <rect x="350" y="25" width="130" height="50" rx="10" fill="#3a1e2a" stroke="#ec4899" stroke-width="1.5"/>
+        <text x="415" y="46" text-anchor="middle" fill="#f9a8d4" font-size="12" font-weight="bold">③ 验证安装</text>
+        <text x="415" y="62" text-anchor="middle" fill="#f472b6" font-size="10">import 测试</text>
+
+        <line x1="482" y1="50" x2="518" y2="50" stroke="#64748b" stroke-width="1.5" marker-end="url(#a1)"/>
+
+        <rect x="520" y="25" width="130" height="50" rx="10" fill="#1a2a3a" stroke="#06b6d4" stroke-width="1.5"/>
+        <text x="585" y="46" text-anchor="middle" fill="#67e8f9" font-size="12" font-weight="bold">④ 开始写代码</text>
+        <text x="585" y="62" text-anchor="middle" fill="#22d3ee" font-size="10">VSCode / PyCharm</text>
+      </svg>
+
+      <div class="install-cmd"><span class="dollar">$</span> pip install requests</div>
+      <div class="install-cmd"><span class="dollar">$</span> pip install beautifulsoup4</div>
+      <div class="install-cmd"><span class="dollar">$</span> pip install pandas openpyxl</div>
+      <div class="install-cmd"><span class="dollar">$</span> pip install lxml</div>
+
+      <div class="tip tip-ok" style="margin-top:16px">
+        <span>✅</span>
+        <div>Anaconda 用户已内置 pandas，只需额外安装 requests 和 beautifulsoup4 即可</div>
+      </div>
+      <div class="tip tip-info">
+        <span>💡</span>
+        <div>国内网络慢可加镜像：<code style="color:#67e8f9">pip install requests -i https://pypi.tuna.tsinghua.edu.cn/simple</code></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ───────────── 5. 文件采集 ───────────── -->
+<section id="file">
+  <div class="container">
+    <div class="section-title">
+      <span class="icon icon-green">📁</span>
+      方式一：读取本地文件
+    </div>
+    <p class="section-sub">最简单的数据采集——直接读取电脑上的 CSV / Excel / JSON 文件</p>
+
+    <!-- 流程图 -->
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:20px">
+      <svg viewBox="0 0 700 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+        <rect width="700" height="90" fill="#1e293b"/>
+        <defs>
+          <marker id="fa" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="#64748b"/>
+          </marker>
+        </defs>
+        <rect x="20"  y="20" width="110" height="50" rx="10" fill="#134e4a" stroke="#2dd4bf"/>
+        <text x="75"  y="42" text-anchor="middle" fill="#99f6e4" font-size="13">📂 准备文件</text>
+        <text x="75"  y="58" text-anchor="middle" fill="#5eead4" font-size="10">CSV / Excel</text>
+        <line x1="132" y1="45" x2="160" y2="45" stroke="#64748b" stroke-width="1.5" marker-end="url(#fa)"/>
+        <rect x="162" y="20" width="110" height="50" rx="10" fill="#1e3a5f" stroke="#3b82f6"/>
+        <text x="217" y="42" text-anchor="middle" fill="#93c5fd" font-size="13">🐼 pandas 读取</text>
+        <text x="217" y="58" text-anchor="middle" fill="#60a5fa" font-size="10">read_csv / read_excel</text>
+        <line x1="274" y1="45" x2="302" y2="45" stroke="#64748b" stroke-width="1.5" marker-end="url(#fa)"/>
+        <rect x="304" y="20" width="110" height="50" rx="10" fill="#3a2a1e" stroke="#f59e0b"/>
+        <text x="359" y="42" text-anchor="middle" fill="#fcd34d" font-size="13">🔎 查看数据</text>
+        <text x="359" y="58" text-anchor="middle" fill="#fbbf24" font-size="10">df.head() / info()</text>
+        <line x1="416" y1="45" x2="444" y2="45" stroke="#64748b" stroke-width="1.5" marker-end="url(#fa)"/>
+        <rect x="446" y="20" width="110" height="50" rx="10" fill="#2a1e3a" stroke="#a855f7"/>
+        <text x="501" y="42" text-anchor="middle" fill="#d8b4fe" font-size="13">🧹 清洗数据</text>
+        <text x="501" y="58" text-anchor="middle" fill="#c084fc" font-size="10">dropna / fillna</text>
+        <line x1="558" y1="45" x2="586" y2="45" stroke="#64748b" stroke-width="1.5" marker-end="url(#fa)"/>
+        <rect x="588" y="20" width="96" height="50" rx="10" fill="#1e3a2a" stroke="#22c55e"/>
+        <text x="636" y="42" text-anchor="middle" fill="#86efac" font-size="13">💾 保存结果</text>
+        <text x="636" y="58" text-anchor="middle" fill="#4ade80" font-size="10">to_csv / to_excel</text>
+      </svg>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <span>file_collect.py — 读取 CSV / Excel 文件</span>
+        <span>Python</span>
+      </div>
+      <pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># ══════════════════════════════════
+# 1. 读取 CSV 文件
+# ══════════════════════════════════</span>
+df = pd.<span class="fn">read_csv</span>(<span class="str">"scores.csv"</span>, encoding=<span class="str">"utf-8"</span>)
+
+<span class="cm"># 2. 查看前 5 行数据</span>
+<span class="fn">print</span>(df.<span class="fn">head</span>())
+
+<span class="cm"># 3. 查看数据基本信息（列名、类型、非空数量）</span>
+<span class="fn">print</span>(df.<span class="fn">info</span>())
+
+<span class="cm"># 4. 查看基本统计（均值、最大最小值等）</span>
+<span class="fn">print</span>(df.<span class="fn">describe</span>())
+
+<span class="cm"># ══════════════════════════════════
+# 读取 Excel 文件（需先 pip install openpyxl）
+# ══════════════════════════════════</span>
+df2 = pd.<span class="fn">read_excel</span>(<span class="str">"data.xlsx"</span>, sheet_name=<span class="str">"Sheet1"</span>)
+
+<span class="cm"># 读取 JSON 文件</span>
+df3 = pd.<span class="fn">read_json</span>(<span class="str">"data.json"</span>)
+
+<span class="cm"># ══════════════════════════════════
+# 5. 数据清洗（去掉空行）
+# ══════════════════════════════════</span>
+df_clean = df.<span class="fn">dropna</span>()          <span class="cm"># 删除含空值的行</span>
+df_fill  = df.<span class="fn">fillna</span>(<span class="num">0</span>)         <span class="cm"># 将空值填充为 0</span>
+
+<span class="cm"># 6. 保存结果为新 CSV</span>
+df_clean.<span class="fn">to_csv</span>(<span class="str">"output.csv"</span>, index=<span class="kw">False</span>)
+<span class="fn">print</span>(<span class="str">"✅ 数据已保存！"</span>)</code></pre>
+    </div>
+
+    <div class="tip tip-info">
+      <span>💡</span>
+      <div>如果文件有中文乱码，尝试 <code style="color:#67e8f9">encoding="gbk"</code> 或 <code style="color:#67e8f9">encoding="gb2312"</code></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ───────────── 6. 网络爬虫 ───────────── -->
+<section id="crawler">
+  <div class="container">
+    <div class="section-title">
+      <span class="icon icon-blue">🕷️</span>
+      方式二：网络爬虫
+    </div>
+    <p class="section-sub">自动访问网页，提取文字、图片、表格等内容——数据采集的核心技能</p>
+
+    <!-- 爬虫流程 SVG -->
+    <div class="card" style="background:linear-gradient(135deg,#1e293b,#0f172a);padding:30px;margin-bottom:24px">
+      <svg viewBox="0 0 800 180" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+        <defs>
+          <marker id="ca" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/>
+          </marker>
+        </defs>
+        <!-- 节点 1 -->
+        <rect x="10" y="55" width="130" height="70" rx="14" fill="#1e1b4b" stroke="#818cf8" stroke-width="2"/>
+        <text x="75" y="80"  text-anchor="middle" fill="#a5b4fc" font-size="22">🌐</text>
+        <text x="75" y="100" text-anchor="middle" fill="#c7d2fe" font-size="13" font-weight="bold">① 发送请求</text>
+        <text x="75" y="116" text-anchor="middle" fill="#818cf8" font-size="10">requests.get(url)</text>
+        <!-- 节点 2 -->
+        <line x1="142" y1="90" x2="178" y2="90" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ca)"/>
+        <rect x="180" y="55" width="130" height="70" rx="14" fill="#1e3a5f" stroke="#3b82f6" stroke-width="2"/>
+        <text x="245" y="80"  text-anchor="middle" fill="#93c5fd" font-size="22">📄</text>
+        <text x="245" y="100" text-anchor="middle" fill="#bfdbfe" font-size="13" font-weight="bold">② 获取网页</text>
+        <text x="245" y="116" text-anchor="middle" fill="#60a5fa" font-size="10">response.text</text>
+        <!-- 节点 3 -->
+        <line x1="312" y1="90" x2="348" y2="90" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ca)"/>
+        <rect x="350" y="55" width="130" height="70" rx="14" fill="#1e3a2a" stroke="#22c55e" stroke-width="2"/>
+        <text x="415" y="80"  text-anchor="middle" fill="#86efac" font-size="22">🍲</text>
+        <text x="415" y="100" text-anchor="middle" fill="#bbf7d0" font-size="13" font-weight="bold">③ 解析 HTML</text>
+        <text x="415" y="116" text-anchor="middle" fill="#4ade80" font-size="10">BeautifulSoup</text>
+        <!-- 节点 4 -->
+        <line x1="482" y1="90" x2="518" y2="90" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ca)"/>
+        <rect x="520" y="55" width="130" height="70" rx="14" fill="#3a2a1e" stroke="#f59e0b" stroke-width="2"/>
+        <text x="585" y="80"  text-anchor="middle" fill="#fcd34d" font-size="22">🔎</text>
+        <text x="585" y="100" text-anchor="middle" fill="#fde68a" font-size="13" font-weight="bold">④ 提取数据</text>
+        <text x="585" y="116" text-anchor="middle" fill="#fbbf24" font-size="10">find / find_all</text>
+        <!-- 节点 5 -->
+        <line x1="652" y1="90" x2="688" y2="90" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#ca)"/>
+        <rect x="690" y="55" width="100" height="70" rx="14" fill="#134e4a" stroke="#2dd4bf" stroke-width="2"/>
+        <text x="740" y="80"  text-anchor="middle" fill="#99f6e4" font-size="22">💾</text>
+        <text x="740" y="100" text-anchor="middle" fill="#ccfbf1" font-size="13" font-weight="bold">⑤ 保存</text>
+        <text x="740" y="116" text-anchor="middle" fill="#2dd4bf" font-size="10">CSV / Excel</text>
+        <!-- 标签 -->
+        <text x="400" y="20" text-anchor="middle" fill="#475569" font-size="12">网络爬虫 完整流程</text>
+      </svg>
+    </div>
+
+    <!-- 分步讲解 -->
+    <div class="steps">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>发送 HTTP 请求</h4>
+          <p>用 requests 库向目标网站发送 GET 请求，就像用浏览器打开网页一样</p>
+          <div class="code-wrap">
+            <div class="code-header">
+              <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+              <span>step1_request.py</span><span>Python</span>
+            </div>
+            <pre><code><span class="kw">import</span> requests
+
+url = <span class="str">"https://quotes.toscrape.com/"</span>  <span class="cm"># 练习用爬虫网站</span>
+
+<span class="cm"># 添加请求头，模拟浏览器，避免被拒绝</span>
+headers = {
+    <span class="str">"User-Agent"</span>: <span class="str">"Mozilla/5.0 (Windows NT 10.0; Win64; x64)"</span>
+}
+
+response = requests.<span class="fn">get</span>(url, headers=headers)
+<span class="fn">print</span>(<span class="str">"状态码："</span>, response.status_code)  <span class="cm"># 200 = 成功</span>
+<span class="fn">print</span>(<span class="str">"网页长度："</span>, <span class="fn">len</span>(response.text), <span class="str">"字符"</span>)</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>解析 HTML 内容</h4>
+          <p>用 BeautifulSoup 把网页 HTML 变成可以用 Python 操作的对象</p>
+          <div class="code-wrap">
+            <div class="code-header">
+              <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+              <span>step2_parse.py</span><span>Python</span>
+            </div>
+            <pre><code><span class="kw">from</span> bs4 <span class="kw">import</span> <span class="cls">BeautifulSoup</span>
+
+<span class="cm"># 用 lxml 解析器解析 HTML（速度快）</span>
+soup = <span class="cls">BeautifulSoup</span>(response.text, <span class="str">"lxml"</span>)
+
+<span class="cm"># 查看网页标题</span>
+<span class="fn">print</span>(soup.<span class="fn">find</span>(<span class="str">"title"</span>).text)
+
+<span class="cm"># 查看网页结构（格式化输出）</span>
+<span class="fn">print</span>(soup.<span class="fn">prettify</span>()[:500])  <span class="cm"># 只看前500字符</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>提取目标数据</h4>
+          <p>用 <code style="color:#a5b4fc">find()</code>（找第一个）和 <code style="color:#a5b4fc">find_all()</code>（找所有）提取数据</p>
+          <div class="code-wrap">
+            <div class="code-header">
+              <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+              <span>step3_extract.py</span><span>Python</span>
+            </div>
+            <pre><code><span class="cm"># 找所有名言（class="text"的span标签）</span>
+quotes = soup.<span class="fn">find_all</span>(<span class="str">"span"</span>, class_=<span class="str">"text"</span>)
+
+<span class="cm"># 找所有作者（class="author"的small标签）</span>
+authors = soup.<span class="fn">find_all</span>(<span class="str">"small"</span>, class_=<span class="str">"author"</span>)
+
+<span class="cm"># 打印前 3 条</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">min</span>(<span class="num">3</span>, <span class="fn">len</span>(quotes))):
+    <span class="fn">print</span>(<span class="str">f"名言：{quotes[i].text}"</span>)
+    <span class="fn">print</span>(<span class="str">f"作者：{authors[i].text}"</span>)
+    <span class="fn">print</span>(<span class="str">"-"</span> * <span class="num">40</span>)</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>保存数据到 CSV</h4>
+          <p>将采集到的数据整理成列表，用 pandas 保存为 CSV 文件</p>
+          <div class="code-wrap">
+            <div class="code-header">
+              <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+              <span>step4_save.py</span><span>Python</span>
+            </div>
+            <pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+data = []
+<span class="kw">for</span> q, a <span class="kw">in</span> <span class="fn">zip</span>(quotes, authors):
+    data.<span class="fn">append</span>({
+        <span class="str">"名言"</span>: q.text.<span class="fn">strip</span>(),
+        <span class="str">"作者"</span>: a.text.<span class="fn">strip</span>()
+    })
+
+<span class="cm"># 转换为 DataFrame</span>
+df = pd.<span class="cls">DataFrame</span>(data)
+<span class="fn">print</span>(df)
+
+<span class="cm"># 保存为 CSV</span>
+df.<span class="fn">to_csv</span>(<span class="str">"quotes.csv"</span>, index=<span class="kw">False</span>, encoding=<span class="str">"utf-8-sig"</span>)
+<span class="fn">print</span>(<span class="str">"✅ 已保存到 quotes.csv"</span>)</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 完整代码 -->
+    <div class="card" style="border-color:#4f46e5">
+      <h3 style="margin-bottom:16px;color:#a5b4fc">🎯 完整爬虫代码（一键运行）</h3>
+      <div class="code-wrap">
+        <div class="code-header">
+          <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+          <span>full_crawler.py</span><span>Python</span>
+        </div>
+        <pre><code><span class="kw">import</span> requests
+<span class="kw">from</span> bs4 <span class="kw">import</span> <span class="cls">BeautifulSoup</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> time
+
+<span class="kw">def</span> <span class="fn">crawl_quotes</span>(pages=<span class="num">3</span>):
+    <span class="str">"""爬取名言网站前 N 页数据"""</span>
+    all_data = []
+    
+    <span class="kw">for</span> page <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, pages + <span class="num">1</span>):
+        url = <span class="str">f"https://quotes.toscrape.com/page/{page}/"</span>
+        headers = {<span class="str">"User-Agent"</span>: <span class="str">"Mozilla/5.0"</span>}
+        
+        <span class="cm"># ① 发请求</span>
+        resp = requests.<span class="fn">get</span>(url, headers=headers, timeout=<span class="num">10</span>)
+        <span class="kw">if</span> resp.status_code != <span class="num">200</span>:
+            <span class="fn">print</span>(<span class="str">f"第{page}页请求失败，跳过"</span>)
+            <span class="kw">continue</span>
+        
+        <span class="cm"># ② 解析</span>
+        soup = <span class="cls">BeautifulSoup</span>(resp.text, <span class="str">"lxml"</span>)
+        items = soup.<span class="fn">find_all</span>(<span class="str">"div"</span>, class_=<span class="str">"quote"</span>)
+        
+        <span class="cm"># ③ 提取</span>
+        <span class="kw">for</span> item <span class="kw">in</span> items:
+            all_data.<span class="fn">append</span>({
+                <span class="str">"名言"</span>: item.<span class="fn">find</span>(<span class="str">"span"</span>, class_=<span class="str">"text"</span>).text.<span class="fn">strip</span>(),
+                <span class="str">"作者"</span>: item.<span class="fn">find</span>(<span class="str">"small"</span>, class_=<span class="str">"author"</span>).text.<span class="fn">strip</span>(),
+                <span class="str">"页码"</span>: page
+            })
+        
+        <span class="fn">print</span>(<span class="str">f"✅ 第{page}页采集完成，共{len(items)}条"</span>)
+        time.<span class="fn">sleep</span>(<span class="num">1</span>)  <span class="cm"># 礼貌等待 1 秒，避免给服务器压力</span>
+    
+    <span class="cm"># ④ 保存</span>
+    df = pd.<span class="cls">DataFrame</span>(all_data)
+    df.<span class="fn">to_csv</span>(<span class="str">"quotes_all.csv"</span>, index=<span class="kw">False</span>, encoding=<span class="str">"utf-8-sig"</span>)
+    <span class="fn">print</span>(<span class="str">f"\n🎉 采集完成！共 {len(all_data)} 条，已保存到 quotes_all.csv"</span>)
+    <span class="kw">return</span> df
+
+<span class="cm"># 运行</span>
+df = <span class="fn">crawl_quotes</span>(pages=<span class="num">3</span>)
+<span class="fn">print</span>(df.<span class="fn">head</span>())</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ───────────── 7. API ───────────── -->
+<section id="api">
+  <div class="container">
+    <div class="section-title">
+      <span class="icon icon-amber">🔌</span>
+      方式三：调用 API 接口
+    </div>
+    <p class="section-sub">许多平台提供官方 API，返回 JSON 格式数据，比爬虫更稳定</p>
+
+    <!-- API 原理图 -->
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:20px">
+      <svg viewBox="0 0 700 140" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+        <rect width="700" height="140" fill="#1e293b"/>
+        <!-- Python -->
+        <rect x="30" y="40" width="140" height="60" rx="12" fill="#312e81" stroke="#818cf8" stroke-width="2"/>
+        <text x="100" y="66"  text-anchor="middle" fill="#c7d2fe" font-size="24">🐍</text>
+        <text x="100" y="85"  text-anchor="middle" fill="#a5b4fc" font-size="12" font-weight="bold">Python 程序</text>
+        <text x="100" y="99"  text-anchor="middle" fill="#818cf8" font-size="10">requests.get()</text>
+        <!-- 箭头 请求 -->
+        <line x1="172" y1="62" x2="258" y2="62" stroke="#22c55e" stroke-width="2" marker-end="url(#ca)"/>
+        <text x="215" y="55" text-anchor="middle" fill="#86efac" font-size="11">📤 发送请求</text>
+        <!-- 服务器 -->
+        <rect x="260" y="40" width="180" height="60" rx="12" fill="#1e3a5f" stroke="#3b82f6" stroke-width="2"/>
+        <text x="350" y="66"  text-anchor="middle" fill="#93c5fd" font-size="24">🏢</text>
+        <text x="350" y="85"  text-anchor="middle" fill="#bfdbfe" font-size="12" font-weight="bold">第三方 API 服务器</text>
+        <text x="350" y="99"  text-anchor="middle" fill="#60a5fa" font-size="10">天气 / 股票 / 地图…</text>
+        <!-- 箭头 响应 -->
+        <line x1="442" y1="78" x2="528" y2="78" stroke="#f59e0b" stroke-width="2" marker-end="url(#ca)"/>
+        <text x="485" y="71" text-anchor="middle" fill="#fcd34d" font-size="11">📥 返回 JSON</text>
+        <!-- 数据 -->
+        <rect x="530" y="40" width="140" height="60" rx="12" fill="#134e4a" stroke="#2dd4bf" stroke-width="2"/>
+        <text x="600" y="66"  text-anchor="middle" fill="#99f6e4" font-size="24">📊</text>
+        <text x="600" y="85"  text-anchor="middle" fill="#ccfbf1" font-size="12" font-weight="bold">结构化数据</text>
+        <text x="600" y="99"  text-anchor="middle" fill="#2dd4bf" font-size="10">解析 / 分析 / 存储</text>
+      </svg>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <span>api_collect.py — 调用免费天气 API</span><span>Python</span>
+      </div>
+      <pre><code><span class="kw">import</span> requests
+<span class="kw">import</span> json
+
+<span class="cm"># ══════════════════════════════════
+# 示例：调用 wttr.in 免费天气 API（无需注册）
+# ══════════════════════════════════</span>
+city = <span class="str">"Changsha"</span>  <span class="cm"># 长沙</span>
+url  = <span class="str">f"https://wttr.in/{city}?format=j1"</span>
+
+headers = {<span class="str">"User-Agent"</span>: <span class="str">"Mozilla/5.0"</span>}
+response = requests.<span class="fn">get</span>(url, headers=headers, timeout=<span class="num">10</span>)
+
+<span class="kw">if</span> response.status_code == <span class="num">200</span>:
+    data = response.<span class="fn">json</span>()     <span class="cm"># 解析 JSON（自动转成字典）</span>
+    
+    current = data[<span class="str">"current_condition"</span>][<span class="num">0</span>]
+    <span class="fn">print</span>(<span class="str">"🌡️  当前温度："</span>, current[<span class="str">"temp_C"</span>], <span class="str">"°C"</span>)
+    <span class="fn">print</span>(<span class="str">"💧 湿度："</span>,     current[<span class="str">"humidity"</span>], <span class="str">"%"</span>)
+    <span class="fn">print</span>(<span class="str">"🌬️  风速："</span>,     current[<span class="str">"windspeedKmph"</span>], <span class="str">"km/h"</span>)
+    <span class="fn">print</span>(<span class="str">"🌤️  天气描述："</span>,  current[<span class="str">"weatherDesc"</span>][<span class="num">0</span>][<span class="str">"value"</span>])
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">f"请求失败，状态码：{response.status_code}"</span>)
+
+<span class="cm"># ══════════════════════════════════
+# 保存原始 JSON 到文件
+# ══════════════════════════════════</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"weather.json"</span>, <span class="str">"w"</span>, encoding=<span class="str">"utf-8"</span>) <span class="kw">as</span> f:
+    json.<span class="fn">dump</span>(data, f, ensure_ascii=<span class="kw">False</span>, indent=<span class="num">2</span>)
+<span class="fn">print</span>(<span class="str">"✅ JSON 已保存到 weather.json"</span>)</code></pre>
+    </div>
+
+    <div class="tip tip-info">
+      <span>💡</span>
+      <div>常用免费 API：<strong>wttr.in</strong>（天气）、<strong>exchangerate-api.com</strong>（汇率）、<strong>pokeapi.co</strong>（练习用）、<strong>jsonplaceholder.typicode.com</strong>（测试数据）</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ───────────── 8. 数据库 ───────────── -->
+<section id="db">
+  <div class="container">
+    <div class="section-title">
+      <span class="icon icon-red">🗄️</span>
+      方式四：从数据库采集
+    </div>
+    <p class="section-sub">Python 内置 sqlite3，可直接操作 SQLite 数据库，无需安装额外软件</p>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div>
+        <span>db_collect.py — SQLite 数据库采集</span><span>Python</span>
+      </div>
+      <pre><code><span class="kw">import</span> sqlite3
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># ══════════════════════════════════
+# 1. 连接（或创建）数据库
+# ══════════════════════════════════</span>
+conn = sqlite3.<span class="fn">connect</span>(<span class="str">"students.db"</span>)
+cursor = conn.<span class="fn">cursor</span>()
+
+<span class="cm"># 2. 创建示例表并插入数据（首次运行）</span>
+cursor.<span class="fn">execute</span>(<span class="str">"""
+    CREATE TABLE IF NOT EXISTS scores (
+        name TEXT, subject TEXT, score REAL
+    )
+"""</span>)
+sample = [
+    (<span class="str">"李天宇"</span>, <span class="str">"数学"</span>, <span class="num">92</span>),
+    (<span class="str">"刘文财"</span>, <span class="str">"数学"</span>, <span class="num">85</span>),
+    (<span class="str">"陈扬"</span>,   <span class="str">"数学"</span>, <span class="num">78</span>),
+]
+cursor.<span class="fn">executemany</span>(<span class="str">"INSERT INTO scores VALUES (?,?,?)"</span>, sample)
+conn.<span class="fn">commit</span>()
+
+<span class="cm"># ══════════════════════════════════
+# 3. 查询数据（用 pandas 直接读取）
+# ══════════════════════════════════</span>
+df = pd.<span class="fn">read_sql_query</span>(<span class="str">"SELECT * FROM scores ORDER BY score DESC"</span>, conn)
+<span class="fn">print</span>(df)
+
+<span class="cm"># 4. 关闭连接</span>
+conn.<span class="fn">close</span>()
+<span class="fn">print</span>(<span class="str">"✅ 数据库采集完成！"</span>)</code></pre>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ───────────── 9. 注意事项 ───────────── -->
+<section id="tips">
+  <div class="container">
+    <div class="section-title">
+      <span class="icon icon-red">⚠️</span>
+      重要注意事项
+    </div>
+    <p class="section-sub">合理合法使用爬虫，避免踩坑</p>
+
+    <div class="card-grid card-grid-2">
+      <div class="card" style="border-left:4px solid #ef4444">
+        <h3 style="color:#fca5a5;margin-bottom:12px">🚫 遵守 robots.txt</h3>
+        <p style="color:var(--muted);font-size:.9rem">每个网站根目录下的 <code>/robots.txt</code> 文件说明了哪些页面禁止爬取，务必遵守。</p>
+        <div class="install-cmd" style="margin-top:12px"><span class="dollar">👉</span> https://example.com/robots.txt</div>
+      </div>
+      <div class="card" style="border-left:4px solid #f59e0b">
+        <h3 style="color:#fcd34d;margin-bottom:12px">⏱️ 控制请求频率</h3>
+        <p style="color:var(--muted);font-size:.9rem">每次请求后加 <code>time.sleep(1)</code> 等待至少 1 秒，频繁请求会被封 IP，也会给服务器带来压力。</p>
+      </div>
+      <div class="card" style="border-left:4px solid #06b6d4">
+        <h3 style="color:#67e8f9;margin-bottom:12px">🔒 数据合法使用</h3>
+        <p style="color:var(--muted);font-size:.9rem">不得爬取个人隐私、受版权保护的内容，采集的数据只能用于学习和合法用途。</p>
+      </div>
+      <div class="card" style="border-left:4px solid #10b981">
+        <h3 style="color:#6ee7b7;margin-bottom:12px">📝 添加请求头</h3>
+        <p style="color:var(--muted);font-size:.9rem">设置 <code>User-Agent</code> 模拟浏览器，部分网站会拒绝没有请求头的访问。</p>
+        <div class="code-wrap" style="margin-top:12px">
+          <pre style="padding:12px"><code><span class="str">"User-Agent"</span>: <span class="str">"Mozilla/5.0 ..."</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- 学习路线 -->
+    <div class="card" style="margin-top:24px;background:linear-gradient(135deg,#1e1b4b,#0f2a3a)">
+      <h3 style="font-size:1.2rem;margin-bottom:20px;color:#c7d2fe">📚 学习路线推荐</h3>
+      <svg viewBox="0 0 760 80" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+        <defs>
+          <marker id="ra" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L7,3 z" fill="#94a3b8"/>
+          </marker>
+        </defs>
+        <rect x="0"   y="15" width="120" height="50" rx="10" fill="#1e3a5f" stroke="#3b82f6"/>
+        <text x="60"  y="38" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="bold">① requests</text>
+        <text x="60"  y="52" text-anchor="middle" fill="#60a5fa" font-size="10">发网络请求</text>
+        <line x1="122" y1="40" x2="148" y2="40" stroke="#64748b" stroke-width="1.5" marker-end="url(#ra)"/>
+        <rect x="150" y="15" width="130" height="50" rx="10" fill="#1e3a2a" stroke="#22c55e"/>
+        <text x="215" y="38" text-anchor="middle" fill="#86efac" font-size="12" font-weight="bold">② BeautifulSoup</text>
+        <text x="215" y="52" text-anchor="middle" fill="#4ade80" font-size="10">解析 HTML</text>
+        <line x1="282" y1="40" x2="308" y2="40" stroke="#64748b" stroke-width="1.5" marker-end="url(#ra)"/>
+        <rect x="310" y="15" width="120" height="50" rx="10" fill="#2a1e3a" stroke="#a855f7"/>
+        <text x="370" y="38" text-anchor="middle" fill="#d8b4fe" font-size="12" font-weight="bold">③ pandas</text>
+        <text x="370" y="52" text-anchor="middle" fill="#c084fc" font-size="10">整理/保存数据</text>
+        <line x1="432" y1="40" x2="458" y2="40" stroke="#64748b" stroke-width="1.5" marker-end="url(#ra)"/>
+        <rect x="460" y="15" width="130" height="50" rx="10" fill="#3a1e2a" stroke="#ec4899"/>
+        <text x="525" y="38" text-anchor="middle" fill="#f9a8d4" font-size="12" font-weight="bold">④ Selenium</text>
+        <text x="525" y="52" text-anchor="middle" fill="#f472b6" font-size="10">动态页面（进阶）</text>
+        <line x1="592" y1="40" x2="618" y2="40" stroke="#64748b" stroke-width="1.5" marker-end="url(#ra)"/>
+        <rect x="620" y="15" width="130" height="50" rx="10" fill="#3a2a1e" stroke="#f59e0b"/>
+        <text x="685" y="38" text-anchor="middle" fill="#fcd34d" font-size="12" font-weight="bold">⑤ Scrapy</text>
+        <text x="685" y="52" text-anchor="middle" fill="#fbbf24" font-size="10">专业框架（进阶）</text>
+      </svg>
+      <p style="color:var(--muted);font-size:.9rem;margin-top:16px;text-align:center">
+        掌握前三步就能完成大多数数据采集任务，Selenium 和 Scrapy 属于进阶内容
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 页脚 ── -->
 <footer>
-  <div>📊 Python 数据分析全面指南 · 数据2501班 · 2026</div>
-  <div style="margin-top:6px;">核心库：<span>NumPy</span> · <span>Pandas</span> · <span>Matplotlib</span> · <span>Seaborn</span> · <span>Scikit-learn</span></div>
+  <p>🐍 Python 数据采集教程 · 为初学者精心制作</p>
+  <p style="margin-top:6px;font-size:.8rem">练习网站：<a href="https://quotes.toscrape.com" style="color:#818cf8" target="_blank">quotes.toscrape.com</a>（专为爬虫练习设计，可放心使用）</p>
 </footer>
 
 </body>
