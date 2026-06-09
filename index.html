@@ -3,969 +3,1198 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>初学者：在 VSCode 中创建路由页面</title>
+  <title>Python 数据分析 — 全面指南</title>
   <style>
     :root {
-      --bg: #0d1117;
-      --bg2: #161b22;
-      --bg3: #21262d;
-      --border: #30363d;
-      --text: #e6edf3;
-      --text2: #8b949e;
-      --blue: #58a6ff;
-      --green: #3fb950;
-      --orange: #d29922;
-      --red: #f85149;
-      --purple: #bc8cff;
-      --cyan: #79c0ff;
-      --yellow: #e3b341;
+      --blue: #3b82f6;
+      --indigo: #6366f1;
+      --purple: #a855f7;
+      --green: #10b981;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+      --dark: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
     }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
-      background: var(--bg);
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--dark);
       color: var(--text);
       line-height: 1.7;
     }
 
-    /* ─── 顶部 Hero ─── */
+    /* ---- HERO ---- */
     .hero {
-      background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 50%, #0d1117 100%);
-      border-bottom: 1px solid var(--border);
-      padding: 60px 24px 50px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0c1a2e 100%);
       text-align: center;
+      padding: 80px 20px 60px;
       position: relative;
       overflow: hidden;
     }
     .hero::before {
       content: '';
-      position: absolute;
-      top: -80px; left: 50%; transform: translateX(-50%);
-      width: 600px; height: 300px;
-      background: radial-gradient(ellipse, rgba(88,166,255,0.12) 0%, transparent 70%);
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(99,102,241,.15) 0%, transparent 60%),
+                  radial-gradient(circle at 80% 20%, rgba(59,130,246,.15) 0%, transparent 50%);
       pointer-events: none;
     }
     .hero-badge {
       display: inline-block;
-      background: rgba(88,166,255,0.1);
-      border: 1px solid rgba(88,166,255,0.3);
-      color: var(--blue);
-      font-size: 12px;
-      padding: 4px 14px;
-      border-radius: 20px;
-      margin-bottom: 16px;
-      letter-spacing: 1px;
+      background: rgba(99,102,241,.2);
+      border: 1px solid rgba(99,102,241,.4);
+      color: #a5b4fc;
+      border-radius: 999px;
+      padding: 4px 16px;
+      font-size: .8rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
     }
     .hero h1 {
-      font-size: clamp(26px, 4vw, 42px);
-      font-weight: 700;
-      margin-bottom: 14px;
-      background: linear-gradient(90deg, #58a6ff, #79c0ff, #bc8cff);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      background: linear-gradient(90deg, #60a5fa, #a78bfa, #34d399);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      margin-bottom: 16px;
     }
     .hero p {
-      color: var(--text2);
-      font-size: 15px;
-      max-width: 560px;
-      margin: 0 auto;
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 640px;
+      margin: 0 auto 32px;
     }
-
-    /* ─── 布局 ─── */
-    .layout {
-      display: flex;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 40px 20px;
-      gap: 30px;
-    }
-
-    /* ─── 侧边导航 ─── */
-    .sidebar {
-      width: 220px;
-      flex-shrink: 0;
-      position: sticky;
-      top: 20px;
-      height: fit-content;
-    }
-    .sidebar-title {
-      font-size: 11px;
-      color: var(--text2);
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      margin-bottom: 10px;
-      padding-left: 10px;
-    }
-    .sidebar ul { list-style: none; }
-    .sidebar li a {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 10px;
-      border-radius: 6px;
-      color: var(--text2);
-      text-decoration: none;
-      font-size: 13px;
-      transition: all 0.2s;
-      border-left: 2px solid transparent;
-    }
-    .sidebar li a:hover,
-    .sidebar li a.active {
-      color: var(--blue);
-      background: rgba(88,166,255,0.07);
-      border-left-color: var(--blue);
-    }
-    .sidebar li a .num {
-      width: 20px; height: 20px;
-      background: var(--bg3);
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      flex-shrink: 0;
-    }
-
-    /* ─── 主内容 ─── */
-    .main { flex: 1; min-width: 0; }
-
-    /* ─── Section ─── */
-    .section {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 32px;
-      margin-bottom: 24px;
-      scroll-margin-top: 20px;
-    }
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 22px;
-    }
-    .step-circle {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 16px;
-      flex-shrink: 0;
-    }
-    .step-circle.blue   { background: rgba(88,166,255,0.15); color: var(--blue); border: 1.5px solid rgba(88,166,255,0.4); }
-    .step-circle.green  { background: rgba(63,185,80,0.15);  color: var(--green); border: 1.5px solid rgba(63,185,80,0.4); }
-    .step-circle.orange { background: rgba(210,153,34,0.15); color: var(--orange); border: 1.5px solid rgba(210,153,34,0.4); }
-    .step-circle.purple { background: rgba(188,140,255,0.15);color: var(--purple); border: 1.5px solid rgba(188,140,255,0.4); }
-    .step-circle.cyan   { background: rgba(121,192,255,0.15);color: var(--cyan); border: 1.5px solid rgba(121,192,255,0.4); }
-    .step-circle.red    { background: rgba(248,81,73,0.15);  color: var(--red); border: 1.5px solid rgba(248,81,73,0.4); }
-    .step-circle.yellow { background: rgba(227,179,65,0.15); color: var(--yellow); border: 1.5px solid rgba(227,179,65,0.4); }
-
-    .section-title {
-      font-size: 18px;
+    .hero-pills { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .pill {
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-size: .85rem;
       font-weight: 600;
-      color: var(--text);
+      border: 1.5px solid;
     }
-    .section-subtitle {
-      font-size: 12px;
-      color: var(--text2);
-      margin-top: 2px;
-    }
+    .pill-blue  { color: #60a5fa; border-color: #3b82f6; background: rgba(59,130,246,.1); }
+    .pill-green { color: #34d399; border-color: #10b981; background: rgba(16,185,129,.1); }
+    .pill-purple{ color: #c084fc; border-color: #a855f7; background: rgba(168,85,247,.1); }
+    .pill-orange{ color: #fbbf24; border-color: #f59e0b; background: rgba(245,158,11,.1); }
 
-    /* ─── 代码块 ─── */
-    .code-wrap {
-      background: #0d1117;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      margin: 14px 0;
+    /* ---- LAYOUT ---- */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    section { padding: 60px 0; }
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
     }
-    .code-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 16px;
-      background: var(--bg3);
-      border-bottom: 1px solid var(--border);
-    }
-    .code-filename {
-      font-size: 12px;
-      color: var(--text2);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .code-filename .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-    }
-    .dot-vue    { background: #42b883; }
-    .dot-js     { background: #f7df1e; }
-    .dot-bash   { background: #79c0ff; }
-    .dot-html   { background: #e96900; }
-    pre {
-      padding: 16px 20px;
-      font-family: 'Fira Code', 'JetBrains Mono', Consolas, monospace;
-      font-size: 13px;
-      line-height: 1.8;
-      overflow-x: auto;
-      white-space: pre;
-    }
-    .c-kw   { color: #ff7b72; }  /* 关键字 keyword */
-    .c-fn   { color: #d2a8ff; }  /* 函数 */
-    .c-str  { color: #a5d6ff; }  /* 字符串 */
-    .c-cmt  { color: #8b949e; font-style: italic; } /* 注释 */
-    .c-tag  { color: #7ee787; }  /* HTML标签 */
-    .c-attr { color: #79c0ff; }  /* 属性 */
-    .c-val  { color: #a5d6ff; }  /* 属性值 */
-    .c-path { color: #ffa657; }  /* 路径 */
-    .c-var  { color: #ffa657; }  /* 变量 */
-    .c-num  { color: #79c0ff; }  /* 数字 */
-    .hl-line {
-      display: block;
-      background: rgba(88,166,255,0.08);
-      border-left: 3px solid var(--blue);
-      padding-left: 17px !important;
-      margin-left: -20px;
-      padding-right: 20px;
-    }
+    .section-sub { color: var(--muted); margin-bottom: 40px; font-size: .95rem; }
+    .divider { height: 1px; background: var(--border); margin: 0; }
 
-    /* ─── 注释气泡（行内标注） ─── */
-    .anno {
-      display: inline-block;
-      margin-left: 8px;
-      background: rgba(88,166,255,0.12);
-      border: 1px solid rgba(88,166,255,0.25);
-      color: var(--blue);
-      font-size: 11px;
-      padding: 1px 8px;
-      border-radius: 10px;
-      font-style: normal;
-      vertical-align: middle;
-      white-space: nowrap;
-    }
-    .anno.green  { background: rgba(63,185,80,0.12);  border-color: rgba(63,185,80,0.3);  color: var(--green); }
-    .anno.orange { background: rgba(210,153,34,0.12); border-color: rgba(210,153,34,0.3); color: var(--orange); }
-    .anno.purple { background: rgba(188,140,255,0.12);border-color: rgba(188,140,255,0.3);color: var(--purple); }
-    .anno.red    { background: rgba(248,81,73,0.12);  border-color: rgba(248,81,73,0.3);  color: var(--red); }
-
-    /* ─── 提示框 ─── */
-    .tip, .warn, .info, .danger {
-      display: flex;
-      gap: 12px;
-      padding: 14px 18px;
-      border-radius: 8px;
-      margin: 14px 0;
-      font-size: 14px;
-      align-items: flex-start;
-    }
-    .tip    { background: rgba(63,185,80,0.08);  border: 1px solid rgba(63,185,80,0.3);  color: #7ee787; }
-    .warn   { background: rgba(210,153,34,0.08); border: 1px solid rgba(210,153,34,0.3); color: var(--yellow); }
-    .info   { background: rgba(88,166,255,0.08); border: 1px solid rgba(88,166,255,0.3); color: var(--blue); }
-    .danger { background: rgba(248,81,73,0.08);  border: 1px solid rgba(248,81,73,0.3);  color: var(--red); }
-    .tip .icon, .warn .icon, .info .icon, .danger .icon {
-      font-size: 18px; flex-shrink: 0; margin-top: 1px;
-    }
-    .tip p, .warn p, .info p, .danger p { color: var(--text); margin: 0; }
-    .tip strong, .warn strong, .info strong, .danger strong { display: block; margin-bottom: 3px; }
-
-    /* ─── 文件树 ─── */
-    .file-tree {
-      background: #0d1117;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px 20px;
-      font-family: 'Fira Code', Consolas, monospace;
-      font-size: 13px;
-      margin: 14px 0;
-    }
-    .file-tree .dir { color: var(--blue); }
-    .file-tree .file { color: var(--text2); }
-    .file-tree .highlight { color: var(--green); font-weight: bold; }
-    .file-tree .new::after {
-      content: ' ← 新建';
-      color: var(--green);
-      font-size: 11px;
-    }
-    .file-tree .modify::after {
-      content: ' ← 修改';
-      color: var(--orange);
-      font-size: 11px;
-    }
-
-    /* ─── 步骤流程图 ─── */
+    /* ---- FLOW DIAGRAM ---- */
+    .flow-wrap { overflow-x: auto; padding: 10px 0; }
     .flow {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 0;
-      flex-wrap: wrap;
-      margin: 16px 0;
+      flex-wrap: nowrap;
+      min-width: 680px;
     }
-    .flow-item {
-      background: var(--bg3);
+    .flow-step {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      width: 120px;
+    }
+    .flow-icon {
+      width: 64px; height: 64px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+    }
+    .flow-label { font-size: .8rem; color: var(--muted); text-align: center; }
+    .flow-arrow { font-size: 1.4rem; color: var(--border); padding: 0 4px; flex-shrink: 0; margin-top: -20px; }
+    .bg-blue   { background: rgba(59,130,246,.15); border: 1.5px solid rgba(59,130,246,.3); }
+    .bg-green  { background: rgba(16,185,129,.15); border: 1.5px solid rgba(16,185,129,.3); }
+    .bg-purple { background: rgba(168,85,247,.15); border: 1.5px solid rgba(168,85,247,.3); }
+    .bg-orange { background: rgba(245,158,11,.15); border: 1.5px solid rgba(245,158,11,.3); }
+    .bg-cyan   { background: rgba(6,182,212,.15);  border: 1.5px solid rgba(6,182,212,.3); }
+    .bg-red    { background: rgba(239,68,68,.15);  border: 1.5px solid rgba(239,68,68,.3); }
+
+    /* ---- LIBRARY CARDS ---- */
+    .lib-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .lib-card {
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 18px;
-      font-size: 13px;
-      text-align: center;
+      border-radius: 16px;
+      padding: 24px;
+      transition: transform .2s, border-color .2s;
     }
-    .flow-item .fi-num { color: var(--text2); font-size: 11px; }
-    .flow-item .fi-text { color: var(--text); font-weight: 500; margin-top: 2px; }
-    .flow-arrow {
-      color: var(--text2);
-      font-size: 18px;
-      padding: 0 6px;
+    .lib-card:hover { transform: translateY(-4px); border-color: rgba(99,102,241,.5); }
+    .lib-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .lib-logo {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; font-weight: 800;
       flex-shrink: 0;
     }
-
-    /* ─── 对比表格 ─── */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13.5px;
-      margin: 14px 0;
-    }
-    th {
-      background: var(--bg3);
-      color: var(--text2);
-      font-weight: 600;
-      padding: 10px 14px;
-      text-align: left;
-      border: 1px solid var(--border);
-    }
-    td {
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      vertical-align: top;
-    }
-    tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
-    .td-good { color: var(--green); }
-    .td-bad  { color: var(--red); }
-    code.inline {
-      background: var(--bg3);
-      color: var(--cyan);
-      padding: 2px 7px;
-      border-radius: 4px;
-      font-family: 'Fira Code', Consolas, monospace;
-      font-size: 12px;
-      border: 1px solid var(--border);
+    .lib-name { font-size: 1.1rem; font-weight: 700; }
+    .lib-ver  { font-size: .75rem; color: var(--muted); }
+    .lib-desc { font-size: .9rem; color: var(--muted); margin-bottom: 14px; line-height: 1.6; }
+    .lib-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag {
+      font-size: .7rem; font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: rgba(99,102,241,.15);
+      color: #a5b4fc;
+      border: 1px solid rgba(99,102,241,.25);
     }
 
-    /* ─── 注意事项卡片 ─── */
-    .notice-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 14px;
-      margin-top: 14px;
-    }
-    .notice-card {
-      background: var(--bg3);
+    /* ---- CODE BLOCK ---- */
+    .code-section { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+    @media(max-width:700px){ .code-section { grid-template-columns: 1fr; } }
+    .code-block {
+      background: #0d1117;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 18px;
+      border-radius: 12px;
+      overflow: hidden;
     }
-    .notice-card .nc-icon { font-size: 24px; margin-bottom: 10px; }
-    .notice-card .nc-title { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
-    .notice-card .nc-body { font-size: 13px; color: var(--text2); line-height: 1.6; }
-    .notice-card.nc-red    { border-color: rgba(248,81,73,0.3);   }
-    .notice-card.nc-orange { border-color: rgba(210,153,34,0.3);  }
-    .notice-card.nc-blue   { border-color: rgba(88,166,255,0.3);  }
-    .notice-card.nc-green  { border-color: rgba(63,185,80,0.3);   }
-    .notice-card.nc-purple { border-color: rgba(188,140,255,0.3); }
-    .notice-card.nc-cyan   { border-color: rgba(121,192,255,0.3); }
-
-    /* ─── 总结 ─── */
-    .summary-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-    .sum-step {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      padding: 14px 0;
+    .code-header {
+      background: #161b22;
+      padding: 10px 16px;
+      display: flex; align-items: center; gap: 8px;
       border-bottom: 1px solid var(--border);
     }
-    .sum-step:last-child { border-bottom: none; }
-    .sum-dot {
-      width: 32px; height: 32px;
-      border-radius: 50%;
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f56; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #27c93f; }
+    .code-filename { font-size: .8rem; color: var(--muted); margin-left: 6px; }
+    pre {
+      padding: 18px 20px;
+      font-size: .82rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    }
+    .kw  { color: #ff7b72; }
+    .fn  { color: #d2a8ff; }
+    .str { color: #a5d6ff; }
+    .num { color: #79c0ff; }
+    .cm  { color: #8b949e; font-style: italic; }
+    .op  { color: #ff7b72; }
+    .var { color: #e6edf3; }
+    .lib { color: #ffa657; }
+
+    /* ---- VISUAL CARDS ---- */
+    .visual-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+    .visual-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .visual-chart { padding: 20px; }
+    .visual-info { padding: 16px 20px 20px; border-top: 1px solid var(--border); }
+    .visual-title { font-weight: 700; margin-bottom: 4px; }
+    .visual-desc  { font-size: .85rem; color: var(--muted); }
+
+    /* ---- BAR CHART SVG ---- */
+    .chart-label { font-size: 11px; fill: #94a3b8; font-family: 'Segoe UI', sans-serif; }
+    .chart-val   { font-size: 11px; fill: #e2e8f0; font-family: 'Segoe UI', sans-serif; font-weight: 600; }
+
+    /* ---- STEPS ---- */
+    .steps { display: flex; flex-direction: column; gap: 0; }
+    .step {
+      display: flex; gap: 20px;
+      padding: 20px 0;
+    }
+    .step:not(:last-child) { border-bottom: 1px solid var(--border); }
+    .step-num {
+      width: 40px; height: 40px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 13px;
+      font-weight: 800; font-size: .9rem;
       flex-shrink: 0;
-      margin-top: 1px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      box-shadow: 0 0 12px rgba(99,102,241,.4);
     }
-    .sum-content { flex: 1; }
-    .sum-content strong { font-size: 14px; display: block; margin-bottom: 3px; }
-    .sum-content span { font-size: 13px; color: var(--text2); }
+    .step-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .step-body p  { font-size: .9rem; color: var(--muted); }
 
-    /* ─── 底部 ─── */
-    .footer {
+    /* ---- STAT BOXES ---- */
+    .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+    .stat-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 16px;
       text-align: center;
-      padding: 40px 20px;
-      color: var(--text2);
-      font-size: 13px;
+    }
+    .stat-num { font-size: 2rem; font-weight: 800; }
+    .stat-lbl { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+
+    /* ---- FOOTER ---- */
+    footer {
+      background: #080e1a;
       border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 28px 20px;
+      font-size: .85rem;
+      color: var(--muted);
+    }
+    footer span { color: #60a5fa; }
+
+    /* ---- TOOLTIP / HIGHLIGHT ---- */
+    mark {
+      background: rgba(59,130,246,.2);
+      color: #93c5fd;
+      border-radius: 4px;
+      padding: 0 4px;
     }
 
-    /* ─── 滚动高亮 ─── */
-    html { scroll-behavior: smooth; }
+    /* ---- PIPELINE ANIMATION ---- */
+    @keyframes pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
+    .pulse { animation: pulse 2s ease-in-out infinite; }
 
-    @media (max-width: 768px) {
-      .sidebar { display: none; }
-      .layout { padding: 20px 14px; }
-      .section { padding: 20px 16px; }
-      .flow { gap: 6px; }
+    /* ---- TABLE ---- */
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th { background: #1e293b; padding: 10px 14px; text-align: left; color: var(--muted); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,.02); }
+    .tbl-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+
+    /* ---- COMPARISON ---- */
+    .cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media(max-width:600px){ .cmp-grid { grid-template-columns: 1fr; } }
+    .cmp-card {
+      background: var(--card);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 20px;
     }
+    .cmp-title { font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .cmp-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; font-size: .88rem; }
+    .cmp-icon { flex-shrink: 0; margin-top: 2px; }
+
+    /* progress bar */
+    .prog-row { margin-bottom: 12px; }
+    .prog-label { display: flex; justify-content: space-between; font-size: .82rem; margin-bottom: 4px; }
+    .prog-bar { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 999px; }
   </style>
 </head>
 <body>
 
-<!-- Hero -->
-<div class="hero">
-  <div class="hero-badge">🌱 前端初学者指南</div>
-  <h1>在 VSCode 中创建路由页面</h1>
-  <p>从零开始，一步步在 Vue 3 项目里添加一个完整的路由页面，含步骤详解 + 常见注意事项</p>
+<!-- ===== HERO ===== -->
+<header class="hero">
+  <div class="hero-badge">📊 2026 完整指南</div>
+  <h1>Python 数据分析<br/>从入门到实战</h1>
+  <p>掌握数据清洗、探索性分析、可视化与建模，用 Python 解锁数据背后的价值</p>
+  <div class="hero-pills">
+    <span class="pill pill-blue">NumPy</span>
+    <span class="pill pill-green">Pandas</span>
+    <span class="pill pill-purple">Matplotlib</span>
+    <span class="pill pill-orange">Scikit-learn</span>
+    <span class="pill pill-blue">Seaborn</span>
+    <span class="pill pill-green">Jupyter</span>
+  </div>
+</header>
+
+<!-- ===== 统计数字 ===== -->
+<div style="background:#111827; padding: 32px 0;">
+  <div class="container">
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-num" style="color:#60a5fa;">6+</div>
+        <div class="stat-lbl">核心分析库</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="color:#34d399;">5</div>
+        <div class="stat-lbl">分析流程阶段</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="color:#c084fc;">20+</div>
+        <div class="stat-lbl">代码示例</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="color:#fbbf24;">10M+</div>
+        <div class="stat-lbl">全球数据科学家使用</div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- 主布局 -->
-<div class="layout">
+<div class="divider"></div>
 
-  <!-- 左侧导航 -->
-  <nav class="sidebar">
-    <div class="sidebar-title">目录</div>
-    <ul>
-      <li><a href="#s0"><span class="num">0</span> 预备知识</a></li>
-      <li><a href="#s1"><span class="num">1</span> 创建项目</a></li>
-      <li><a href="#s2"><span class="num">2</span> 安装 Vue Router</a></li>
-      <li><a href="#s3"><span class="num">3</span> 新建页面文件</a></li>
-      <li><a href="#s4"><span class="num">4</span> 注册路由</a></li>
-      <li><a href="#s5"><span class="num">5</span> 配置导航</a></li>
-      <li><a href="#s6"><span class="num">6</span> 启动验证</a></li>
-      <li><a href="#notice">⚠ 注意事项</a></li>
-      <li><a href="#summary">📋 总结</a></li>
-    </ul>
-  </nav>
+<!-- ===== 数据分析流程 ===== -->
+<section>
+  <div class="container">
+    <div class="section-title">📋 数据分析完整流程</div>
+    <div class="section-sub">一个标准的 Python 数据分析项目遵循以下 6 个核心阶段</div>
 
-  <!-- 右侧主内容 -->
-  <main class="main">
-
-    <!-- 整体流程 -->
-    <section class="section" style="background: linear-gradient(135deg, var(--bg2), #1a1f2e);">
-      <div class="section-header">
-        <div style="font-size:28px;">🗺️</div>
-        <div>
-          <div class="section-title">整体流程一览</div>
-          <div class="section-subtitle">按顺序完成以下 6 步，就能在浏览器里看到你的路由页面</div>
-        </div>
-      </div>
+    <div class="flow-wrap">
       <div class="flow">
-        <div class="flow-item"><div class="fi-num">Step 0</div><div class="fi-text">📚 预备知识</div></div>
+        <div class="flow-step">
+          <div class="flow-icon bg-blue pulse">📥</div>
+          <div style="font-size:.85rem;font-weight:700;color:#60a5fa;">数据获取</div>
+          <div class="flow-label">CSV · API · 数据库</div>
+        </div>
         <div class="flow-arrow">→</div>
-        <div class="flow-item"><div class="fi-num">Step 1</div><div class="fi-text">📦 创建项目</div></div>
+        <div class="flow-step">
+          <div class="flow-icon bg-orange pulse" style="animation-delay:.3s">🧹</div>
+          <div style="font-size:.85rem;font-weight:700;color:#fbbf24;">数据清洗</div>
+          <div class="flow-label">缺失值 · 异常值</div>
+        </div>
         <div class="flow-arrow">→</div>
-        <div class="flow-item"><div class="fi-num">Step 2</div><div class="fi-text">⚙️ 安装路由</div></div>
+        <div class="flow-step">
+          <div class="flow-icon bg-purple pulse" style="animation-delay:.6s">🔍</div>
+          <div style="font-size:.85rem;font-weight:700;color:#c084fc;">探索分析</div>
+          <div class="flow-label">EDA · 统计描述</div>
+        </div>
         <div class="flow-arrow">→</div>
-        <div class="flow-item"><div class="fi-num">Step 3</div><div class="fi-text">📄 新建文件</div></div>
+        <div class="flow-step">
+          <div class="flow-icon bg-cyan pulse" style="animation-delay:.9s">📊</div>
+          <div style="font-size:.85rem;font-weight:700;color:#22d3ee;">数据可视化</div>
+          <div class="flow-label">图表 · 仪表盘</div>
+        </div>
         <div class="flow-arrow">→</div>
-        <div class="flow-item"><div class="fi-num">Step 4</div><div class="fi-text">🔗 注册路由</div></div>
+        <div class="flow-step">
+          <div class="flow-icon bg-green pulse" style="animation-delay:1.2s">🤖</div>
+          <div style="font-size:.85rem;font-weight:700;color:#34d399;">建模分析</div>
+          <div class="flow-label">ML · 统计模型</div>
+        </div>
         <div class="flow-arrow">→</div>
-        <div class="flow-item"><div class="fi-num">Step 5</div><div class="fi-text">🧭 配置导航</div></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-item"><div class="fi-num">Step 6</div><div class="fi-text">🚀 启动验证</div></div>
-      </div>
-    </section>
-
-    <!-- Step 0 预备知识 -->
-    <section class="section" id="s0">
-      <div class="section-header">
-        <div class="step-circle blue">0</div>
-        <div>
-          <div class="section-title">预备知识</div>
-          <div class="section-subtitle">开始之前，确认你已经安装了这些工具</div>
+        <div class="flow-step">
+          <div class="flow-icon bg-red pulse" style="animation-delay:1.5s">📝</div>
+          <div style="font-size:.85rem;font-weight:700;color:#f87171;">报告输出</div>
+          <div class="flow-label">结论 · 洞察</div>
         </div>
       </div>
+    </div>
 
-      <table>
-        <thead>
-          <tr><th>工具</th><th>作用</th><th>检查命令</th><th>状态</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Node.js</strong></td>
-            <td>前端项目的运行环境，必须安装</td>
-            <td><code class="inline">node -v</code></td>
-            <td class="td-good">✅ 先装这个</td>
-          </tr>
-          <tr>
-            <td><strong>npm / pnpm</strong></td>
-            <td>包管理器，用来安装各种依赖</td>
-            <td><code class="inline">npm -v</code></td>
-            <td class="td-good">✅ 随 Node 自带</td>
-          </tr>
-          <tr>
-            <td><strong>VSCode</strong></td>
-            <td>代码编辑器</td>
-            <td>直接打开即可</td>
-            <td class="td-good">✅ 必装</td>
-          </tr>
-          <tr>
-            <td><strong>Volar 插件</strong></td>
-            <td>VSCode 里识别 .vue 文件语法</td>
-            <td>扩展商店搜索 Vue - Official</td>
-            <td class="td-good">✅ 强烈推荐</td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- SVG 流程详解 -->
+    <div style="margin-top:40px; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px;">
+      <svg viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-height:280px;">
+        <defs>
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#3b82f6" stop-opacity=".8"/>
+            <stop offset="100%" stop-color="#6366f1" stop-opacity=".8"/>
+          </linearGradient>
+          <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f59e0b" stop-opacity=".8"/>
+            <stop offset="100%" stop-color="#ef4444" stop-opacity=".8"/>
+          </linearGradient>
+          <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#a855f7" stop-opacity=".8"/>
+            <stop offset="100%" stop-color="#ec4899" stop-opacity=".8"/>
+          </linearGradient>
+          <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#06b6d4" stop-opacity=".8"/>
+            <stop offset="100%" stop-color="#3b82f6" stop-opacity=".8"/>
+          </linearGradient>
+          <linearGradient id="g5" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981" stop-opacity=".8"/>
+            <stop offset="100%" stop-color="#06b6d4" stop-opacity=".8"/>
+          </linearGradient>
+          <linearGradient id="g6" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ef4444" stop-opacity=".8"/>
+            <stop offset="100%" stop-color="#f97316" stop-opacity=".8"/>
+          </linearGradient>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+            <path d="M0,1 L7,4 L0,7 Z" fill="#475569"/>
+          </marker>
+        </defs>
 
-      <div class="info">
-        <div class="icon">💡</div>
-        <p><strong>没有安装 Node.js？</strong>去官网 <code class="inline">nodejs.org</code> 下载 LTS 版本，安装后重启 VSCode，再在终端里输入 <code class="inline">node -v</code> 验证。</p>
-      </div>
-    </section>
+        <!-- Connecting lines -->
+        <line x1="120" y1="130" x2="200" y2="130" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="270" y1="130" x2="350" y2="130" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="420" y1="130" x2="500" y2="130" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="570" y1="130" x2="650" y2="130" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
+        <line x1="720" y1="130" x2="800" y2="130" stroke="#334155" stroke-width="2" marker-end="url(#arr)"/>
 
-    <!-- Step 1 创建项目 -->
-    <section class="section" id="s1">
-      <div class="section-header">
-        <div class="step-circle green">1</div>
-        <div>
-          <div class="section-title">创建 Vite + Vue 3 项目</div>
-          <div class="section-subtitle">用脚手架快速生成项目骨架，不要从零手写</div>
-        </div>
-      </div>
+        <!-- Step 1: 数据获取 -->
+        <rect x="20" y="90" width="100" height="80" rx="12" fill="url(#g1)" opacity=".9"/>
+        <text x="70" y="120" text-anchor="middle" fill="white" font-size="22">📥</text>
+        <text x="70" y="142" text-anchor="middle" fill="white" font-size="11" font-weight="bold">数据获取</text>
+        <text x="70" y="158" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">pandas.read_csv()</text>
 
-      <p style="margin-bottom:12px; font-size:14px; color:var(--text2);">打开 VSCode，按 <code class="inline">Ctrl + `</code> 打开终端，输入以下命令：</p>
+        <!-- Step 2: 数据清洗 -->
+        <rect x="200" y="90" width="100" height="80" rx="12" fill="url(#g2)" opacity=".9"/>
+        <text x="250" y="120" text-anchor="middle" fill="white" font-size="22">🧹</text>
+        <text x="250" y="142" text-anchor="middle" fill="white" font-size="11" font-weight="bold">数据清洗</text>
+        <text x="250" y="158" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">dropna() / fillna()</text>
 
-      <div class="code-wrap">
-        <div class="code-header">
-          <div class="code-filename"><span class="dot dot-bash"></span> 终端（PowerShell / cmd）</div>
-        </div>
-        <pre><span class="c-cmt"># 1. 创建项目（my-router-app 是项目名，可以改）</span>
-npm create vite@latest my-router-app -- --template vue
+        <!-- Step 3: 探索分析 -->
+        <rect x="380" y="90" width="100" height="80" rx="12" fill="url(#g3)" opacity=".9"/>
+        <text x="430" y="120" text-anchor="middle" fill="white" font-size="22">🔍</text>
+        <text x="430" y="142" text-anchor="middle" fill="white" font-size="11" font-weight="bold">探索分析</text>
+        <text x="430" y="158" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">describe() / corr()</text>
 
-<span class="c-cmt"># 2. 进入项目目录</span>
-cd my-router-app
+        <!-- Step 4: 可视化 -->
+        <rect x="560" y="90" width="100" height="80" rx="12" fill="url(#g4)" opacity=".9"/>
+        <text x="610" y="120" text-anchor="middle" fill="white" font-size="22">📊</text>
+        <text x="610" y="142" text-anchor="middle" fill="white" font-size="11" font-weight="bold">可视化</text>
+        <text x="610" y="158" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">plt.plot() / sns</text>
 
-<span class="c-cmt"># 3. 安装所有依赖</span>
-npm install</pre>
-      </div>
+        <!-- Step 5: 建模 -->
+        <rect x="740" y="90" width="100" height="80" rx="12" fill="url(#g5)" opacity=".9"/>
+        <text x="790" y="120" text-anchor="middle" fill="white" font-size="22">🤖</text>
+        <text x="790" y="142" text-anchor="middle" fill="white" font-size="11" font-weight="bold">建模分析</text>
+        <text x="790" y="158" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">sklearn / statsmodels</text>
 
-      <div class="warn">
-        <div class="icon">⚠️</div>
-        <p><strong>注意：创建时选 Vue + JavaScript，不要选 TypeScript！</strong><br>初学者先学 JS 版本，TypeScript 等熟练后再切换。</p>
-      </div>
+        <!-- Bottom labels -->
+        <text x="70"  y="190" text-anchor="middle" fill="#60a5fa" font-size="9">CSV/Excel/SQL/API</text>
+        <text x="250" y="190" text-anchor="middle" fill="#fbbf24" font-size="9">缺失/重复/格式化</text>
+        <text x="430" y="190" text-anchor="middle" fill="#c084fc" font-size="9">分布/相关/分组</text>
+        <text x="610" y="190" text-anchor="middle" fill="#22d3ee" font-size="9">折线/柱状/散点/热图</text>
+        <text x="790" y="190" text-anchor="middle" fill="#34d399" font-size="9">回归/分类/聚类</text>
 
-      <p style="margin: 14px 0 8px; font-size:14px; color:var(--text2);">命令执行完毕后，项目结构如下：</p>
-      <div class="file-tree">
-        <span class="dir">my-router-app/</span><br>
-        &nbsp;&nbsp;├── <span class="dir">src/</span><br>
-        &nbsp;&nbsp;│   ├── <span class="file">App.vue</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">← 根组件</span><br>
-        &nbsp;&nbsp;│   ├── <span class="file">main.js</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">← 入口文件</span><br>
-        &nbsp;&nbsp;│   └── <span class="dir">components/</span><br>
-        &nbsp;&nbsp;├── <span class="file">index.html</span><br>
-        &nbsp;&nbsp;├── <span class="file">package.json</span><br>
-        &nbsp;&nbsp;└── <span class="file">vite.config.js</span>
-      </div>
-    </section>
+        <!-- Feedback arrow -->
+        <path d="M840 175 Q840 230 430 230 Q20 230 20 175" stroke="#334155" stroke-width="1.5" fill="none" stroke-dasharray="6,4" marker-end="url(#arr)"/>
+        <text x="430" y="248" text-anchor="middle" fill="#475569" font-size="10">迭代优化</text>
+      </svg>
+    </div>
+  </div>
+</section>
 
-    <!-- Step 2 安装 Vue Router -->
-    <section class="section" id="s2">
-      <div class="section-header">
-        <div class="step-circle orange">2</div>
-        <div>
-          <div class="section-title">安装 Vue Router</div>
-          <div class="section-subtitle">Vite 默认不带路由，需要手动安装并配置</div>
-        </div>
-      </div>
+<div class="divider"></div>
 
-      <div class="code-wrap">
-        <div class="code-header">
-          <div class="code-filename"><span class="dot dot-bash"></span> 终端</div>
-        </div>
-        <pre><span class="c-cmt"># 安装 vue-router</span>
-npm install vue-router</pre>
-      </div>
+<!-- ===== 核心库介绍 ===== -->
+<section>
+  <div class="container">
+    <div class="section-title">📦 核心库详解</div>
+    <div class="section-sub">Python 数据分析生态系统由以下六大核心库构成</div>
+    <div class="lib-grid">
 
-      <p style="margin: 14px 0 10px; font-size: 14px; color: var(--text2);">安装完毕后，在 <code class="inline">src/</code> 下手动创建 <code class="inline">router/index.js</code> 文件：</p>
-
-      <div class="file-tree">
-        <span class="dir">src/</span><br>
-        &nbsp;&nbsp;├── <span class="dir">router/</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new" style="color:var(--green);font-size:11px">← 新建这个文件夹</span><br>
-        &nbsp;&nbsp;│   └── <span class="highlight">index.js</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new" style="color:var(--green);font-size:11px">← 新建这个文件</span><br>
-        &nbsp;&nbsp;├── <span class="dir">views/</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="new" style="color:var(--green);font-size:11px">← 新建这个文件夹</span><br>
-        &nbsp;&nbsp;├── App.vue<br>
-        &nbsp;&nbsp;└── main.js
-      </div>
-
-      <p style="margin: 14px 0 8px; font-size: 14px;">写入 <code class="inline">router/index.js</code> 内容：</p>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <div class="code-filename"><span class="dot dot-js"></span> src/router/index.js</div>
-        </div>
-        <pre><span class="c-kw">import</span> { createRouter, createWebHashHistory } <span class="c-kw">from</span> <span class="c-str">'vue-router'</span>
-
-<span class="c-kw">const</span> <span class="c-var">routes</span> = [
-  <span class="c-cmt">// 这里写路由规则，等 Step 4 再填</span>
-]
-
-<span class="c-kw">const</span> <span class="c-var">router</span> = createRouter({
-  history: <span class="c-fn">createWebHashHistory</span>(),   <span class="c-cmt">// 使用 Hash 模式（初学者用这个）</span>
-  routes,
-})
-
-<span class="c-kw">export default</span> router</pre>
-      </div>
-
-      <p style="margin: 14px 0 8px; font-size: 14px;">然后在 <code class="inline">main.js</code> 里引入并挂载路由：</p>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <div class="code-filename"><span class="dot dot-js"></span> src/main.js</div>
-        </div>
-        <pre><span class="c-kw">import</span> { createApp } <span class="c-kw">from</span> <span class="c-str">'vue'</span>
-<span class="c-kw">import</span> App <span class="c-kw">from</span> <span class="c-str">'./App.vue'</span>
-<span class="c-kw">import</span> router <span class="c-kw">from</span> <span class="c-str">'./router/index.js'</span>  <span class="anno">新增这一行</span>
-
-<span class="c-fn">createApp</span>(App)
-  .use(router)       <span class="anno green">挂载路由，新增</span>
-  .mount(<span class="c-str">'#app'</span>)</pre>
-      </div>
-
-      <div class="tip">
-        <div class="icon">✅</div>
-        <p><strong>.use(router) 一定要加！</strong> 忘了这一行，路由不会生效，也不会报错，只是什么都不发生——这是初学者最常踩的坑之一。</p>
-      </div>
-    </section>
-
-    <!-- Step 3 新建页面文件 -->
-    <section class="section" id="s3">
-      <div class="section-header">
-        <div class="step-circle purple">3</div>
-        <div>
-          <div class="section-title">新建页面 .vue 文件</div>
-          <div class="section-subtitle">每个路由对应一个 .vue 文件，放在 src/views/ 目录下</div>
-        </div>
-      </div>
-
-      <p style="margin-bottom:12px;font-size:14px;color:var(--text2);">在 <code class="inline">src/views/</code> 目录下，右键 → 新建文件，创建以下两个文件：</p>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <div class="code-filename"><span class="dot dot-vue"></span> src/views/HomeView.vue</div>
-        </div>
-        <pre><span class="c-tag">&lt;template&gt;</span>
-  <span class="c-tag">&lt;div&gt;</span>
-    <span class="c-tag">&lt;h1&gt;</span>🏠 首页<span class="c-tag">&lt;/h1&gt;</span>          <span class="anno">显示在网页上的内容</span>
-    <span class="c-tag">&lt;p&gt;</span>欢迎来到首页！<span class="c-tag">&lt;/p&gt;</span>
-  <span class="c-tag">&lt;/div&gt;</span>
-<span class="c-tag">&lt;/template&gt;</span></pre>
-      </div>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <div class="code-filename"><span class="dot dot-vue"></span> src/views/AboutView.vue</div>
-        </div>
-        <pre><span class="c-tag">&lt;template&gt;</span>
-  <span class="c-tag">&lt;div&gt;</span>
-    <span class="c-tag">&lt;h1&gt;</span>📖 关于我们<span class="c-tag">&lt;/h1&gt;</span>
-    <span class="c-tag">&lt;p&gt;</span>这是关于页面。<span class="c-tag">&lt;/p&gt;</span>
-  <span class="c-tag">&lt;/div&gt;</span>
-<span class="c-tag">&lt;/template&gt;</span></pre>
-      </div>
-
-      <div class="warn">
-        <div class="icon">⚠️</div>
-        <p><strong>命名规范：</strong>页面组件文件名用大驼峰 <code class="inline">HomeView.vue</code>，不要用 <code class="inline">homeView.vue</code> 或 <code class="inline">home-view.vue</code>，保持统一风格，后面维护更方便。</p>
-      </div>
-    </section>
-
-    <!-- Step 4 注册路由 -->
-    <section class="section" id="s4">
-      <div class="section-header">
-        <div class="step-circle cyan">4</div>
-        <div>
-          <div class="section-title">在路由表里注册</div>
-          <div class="section-subtitle">告诉 Vue Router：访问哪个路径，显示哪个页面</div>
-        </div>
-      </div>
-
-      <p style="margin-bottom:12px;font-size:14px;color:var(--text2);">回到 <code class="inline">src/router/index.js</code>，填入路由规则：</p>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <div class="code-filename"><span class="dot dot-js"></span> src/router/index.js（完整版）</div>
-        </div>
-        <pre><span class="c-kw">import</span> { createRouter, createWebHashHistory } <span class="c-kw">from</span> <span class="c-str">'vue-router'</span>
-<span class="c-cmt">// 静态导入（写在最顶部，一启动就加载）</span>
-<span class="c-kw">import</span> HomeView <span class="c-kw">from</span> <span class="c-str">'../views/HomeView.vue'</span>
-
-<span class="c-kw">const</span> <span class="c-var">routes</span> = [
-  {
-    path: <span class="c-str">'/'</span>,            <span class="anno">URL路径：根路径</span>
-    component: HomeView  <span class="anno green">对应组件：HomeView</span>
-  },
-  {
-    path: <span class="c-str">'/about'</span>,       <span class="anno">URL路径：/about</span>
-    <span class="c-cmt">// 动态导入（访问时才加载，推荐用法）</span>
-    component: () <span class="c-kw">=&gt;</span> <span class="c-kw">import</span>(<span class="c-str">'../views/AboutView.vue'</span>)  <span class="anno orange">懒加载</span>
-  },
-]
-
-<span class="c-kw">const</span> <span class="c-var">router</span> = createRouter({
-  history: <span class="c-fn">createWebHashHistory</span>(),
-  routes,
-})
-
-<span class="c-kw">export default</span> router</pre>
-      </div>
-
-      <div class="info">
-        <div class="icon">💡</div>
-        <p><strong>静态导入 vs 动态导入：</strong>核心页面（首页）用静态导入；不常用的页面用 <code class="inline">() =&gt; import(...)</code> 动态导入。动态导入能让首屏加载更快。</p>
-      </div>
-    </section>
-
-    <!-- Step 5 配置导航 -->
-    <section class="section" id="s5">
-      <div class="section-header">
-        <div class="step-circle red">5</div>
-        <div>
-          <div class="section-title">在 App.vue 里配置导航</div>
-          <div class="section-subtitle">加入 RouterLink（导航链接）和 RouterView（页面显示区域）</div>
-        </div>
-      </div>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <div class="code-filename"><span class="dot dot-vue"></span> src/App.vue</div>
-        </div>
-        <pre><span class="c-tag">&lt;template&gt;</span>
-  <span class="c-tag">&lt;div&gt;</span>
-    <span class="c-cmt">&lt;!-- 导航栏：永远显示，不随页面切换消失 --&gt;</span>
-    <span class="c-tag">&lt;nav&gt;</span>
-      <span class="c-tag">&lt;RouterLink</span> <span class="c-attr">to</span>=<span class="c-val">"/"</span><span class="c-tag">&gt;</span>首页<span class="c-tag">&lt;/RouterLink&gt;</span>      <span class="anno">跳转根路径</span>
-      <span class="c-tag">&lt;RouterLink</span> <span class="c-attr">to</span>=<span class="c-val">"/about"</span><span class="c-tag">&gt;</span>关于<span class="c-tag">&lt;/RouterLink&gt;</span>  <span class="anno">跳转/about</span>
-    <span class="c-tag">&lt;/nav&gt;</span>
-
-    <span class="c-tag">&lt;hr /&gt;</span>
-
-    <span class="c-cmt">&lt;!-- 路由出口：当前页面的内容渲染在这里 --&gt;</span>
-    <span class="c-tag">&lt;RouterView</span> <span class="c-tag">/&gt;</span>   <span class="anno purple">页面内容显示在这里！</span>
-  <span class="c-tag">&lt;/div&gt;</span>
-<span class="c-tag">&lt;/template&gt;</span></pre>
-      </div>
-
-      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin:14px 0;">
-        <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">这两个标签的作用：</p>
-        <table style="margin:0;">
-          <thead>
-            <tr><th>标签</th><th>作用</th><th>类比</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code class="inline">&lt;RouterLink to="/xxx"&gt;</code></td>
-              <td>导航链接，点击后切换页面（不会整页刷新）</td>
-              <td>电视遥控器的频道按钮</td>
-            </tr>
-            <tr>
-              <td><code class="inline">&lt;RouterView /&gt;</code></td>
-              <td>页面内容的"占位符"，显示当前路由对应的组件</td>
-              <td>电视屏幕</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="danger">
-        <div class="icon">🚨</div>
-        <p><strong>不要用 <code class="inline">&lt;a href="/about"&gt;</code> 代替 RouterLink！</strong><br>普通的 <code class="inline">&lt;a&gt;</code> 标签会触发浏览器整页刷新，SPA 的意义就丧失了。必须用 <code class="inline">&lt;RouterLink&gt;</code>。</p>
-      </div>
-    </section>
-
-    <!-- Step 6 启动验证 -->
-    <section class="section" id="s6">
-      <div class="section-header">
-        <div class="step-circle yellow">6</div>
-        <div>
-          <div class="section-title">启动项目，在浏览器验证</div>
-          <div class="section-subtitle">最后一步！看看你的路由页面跑起来了吗</div>
-        </div>
-      </div>
-
-      <div class="code-wrap">
-        <div class="code-header">
-          <div class="code-filename"><span class="dot dot-bash"></span> 终端</div>
-        </div>
-        <pre><span class="c-cmt"># 启动开发服务器</span>
-npm run dev</pre>
-      </div>
-
-      <p style="margin:12px 0 8px;font-size:14px;color:var(--text2);">终端里会显示：</p>
-      <div class="code-wrap">
-        <div class="code-header">
-          <div class="code-filename"><span class="dot dot-bash"></span> 终端输出</div>
-        </div>
-        <pre>  VITE v5.x.x  ready in xxx ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: use --host to expose</pre>
-      </div>
-
-      <p style="margin:12px 0 8px;font-size:14px;">按住 <code class="inline">Ctrl</code> 点击链接，或打开浏览器访问 <code class="inline">http://localhost:5173/</code></p>
-
-      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:20px;margin:14px 0;">
-        <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">你应该在浏览器里看到：</p>
-        <div style="background:#1a1f2e;border-radius:6px;padding:14px 18px;font-size:14px;">
-          <div style="border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:12px;">
-            <span style="color:var(--blue);text-decoration:underline;cursor:pointer;margin-right:18px;">首页</span>
-            <span style="color:var(--text2);cursor:pointer;">关于</span>
-            &nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px;">← 导航栏（来自 App.vue）</span>
-          </div>
+      <!-- NumPy -->
+      <div class="lib-card">
+        <div class="lib-header">
+          <div class="lib-logo" style="background:linear-gradient(135deg,#013243,#4DABCF); color:#4DABCF;">N</div>
           <div>
-            <h3 style="color:var(--text);font-size:16px;margin-bottom:6px;">🏠 首页</h3>
-            <p style="color:var(--text2);font-size:13px;">欢迎来到首页！</p>
-            <p style="color:var(--text2);font-size:11px;margin-top:10px;">↑ RouterView 里显示的内容（来自 HomeView.vue）</p>
+            <div class="lib-name">NumPy</div>
+            <div class="lib-ver">Numerical Python · v1.26+</div>
+          </div>
+        </div>
+        <div class="lib-desc">Python 科学计算的基础库，提供高效的 <mark>N 维数组</mark> (ndarray) 对象，支持向量化运算、广播机制和线性代数操作，是所有数值计算库的底层依赖。</div>
+        <div style="margin-bottom:12px;">
+          <div class="prog-row">
+            <div class="prog-label"><span>运算速度</span><span style="color:#4DABCF;">95%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:95%;background:linear-gradient(90deg,#013243,#4DABCF);"></div></div>
+          </div>
+          <div class="prog-row">
+            <div class="prog-label"><span>使用频率</span><span style="color:#4DABCF;">99%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:99%;background:linear-gradient(90deg,#013243,#4DABCF);"></div></div>
+          </div>
+        </div>
+        <div class="lib-tags">
+          <span class="tag">数组运算</span><span class="tag">线性代数</span><span class="tag">傅里叶变换</span><span class="tag">随机数</span>
+        </div>
+      </div>
+
+      <!-- Pandas -->
+      <div class="lib-card">
+        <div class="lib-header">
+          <div class="lib-logo" style="background:linear-gradient(135deg,#130654,#e70488); color:#e70488;">P</div>
+          <div>
+            <div class="lib-name">Pandas</div>
+            <div class="lib-ver">Panel Data · v2.1+</div>
+          </div>
+        </div>
+        <div class="lib-desc">数据分析的核心工具，提供 <mark>DataFrame</mark> 和 Series 数据结构，支持数据读取、清洗、合并、分组聚合、时序分析等全流程操作，被誉为"数据科学的瑞士军刀"。</div>
+        <div style="margin-bottom:12px;">
+          <div class="prog-row">
+            <div class="prog-label"><span>数据处理</span><span style="color:#e70488;">98%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:98%;background:linear-gradient(90deg,#130654,#e70488);"></div></div>
+          </div>
+          <div class="prog-row">
+            <div class="prog-label"><span>易用性</span><span style="color:#e70488;">90%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:90%;background:linear-gradient(90deg,#130654,#e70488);"></div></div>
+          </div>
+        </div>
+        <div class="lib-tags">
+          <span class="tag">DataFrame</span><span class="tag">数据清洗</span><span class="tag">分组聚合</span><span class="tag">时序</span>
+        </div>
+      </div>
+
+      <!-- Matplotlib -->
+      <div class="lib-card">
+        <div class="lib-header">
+          <div class="lib-logo" style="background:linear-gradient(135deg,#11557c,#ef8336); color:#ef8336;">M</div>
+          <div>
+            <div class="lib-name">Matplotlib</div>
+            <div class="lib-ver">可视化基础 · v3.8+</div>
+          </div>
+        </div>
+        <div class="lib-desc">Python 最成熟的绘图库，提供类似 MATLAB 的绘图接口。支持折线图、散点图、柱状图、饼图等 <mark>数十种图表类型</mark>，可精细控制每一个图形元素。</div>
+        <div style="margin-bottom:12px;">
+          <div class="prog-row">
+            <div class="prog-label"><span>图表种类</span><span style="color:#ef8336;">92%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:92%;background:linear-gradient(90deg,#11557c,#ef8336);"></div></div>
+          </div>
+          <div class="prog-row">
+            <div class="prog-label"><span>定制灵活度</span><span style="color:#ef8336;">95%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:95%;background:linear-gradient(90deg,#11557c,#ef8336);"></div></div>
+          </div>
+        </div>
+        <div class="lib-tags">
+          <span class="tag">折线图</span><span class="tag">散点图</span><span class="tag">子图</span><span class="tag">3D绘图</span>
+        </div>
+      </div>
+
+      <!-- Seaborn -->
+      <div class="lib-card">
+        <div class="lib-header">
+          <div class="lib-logo" style="background:linear-gradient(135deg,#3b6978,#84a9ac); color:#84a9ac;">S</div>
+          <div>
+            <div class="lib-name">Seaborn</div>
+            <div class="lib-ver">统计可视化 · v0.13+</div>
+          </div>
+        </div>
+        <div class="lib-desc">基于 Matplotlib 的高层次统计可视化库，内置 <mark>美观的配色方案</mark>，几行代码即可绘制热力图、箱线图、violin 图、回归图等，专为探索性数据分析设计。</div>
+        <div style="margin-bottom:12px;">
+          <div class="prog-row">
+            <div class="prog-label"><span>美观度</span><span style="color:#84a9ac;">96%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:96%;background:linear-gradient(90deg,#3b6978,#84a9ac);"></div></div>
+          </div>
+          <div class="prog-row">
+            <div class="prog-label"><span>代码简洁度</span><span style="color:#84a9ac;">94%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:94%;background:linear-gradient(90deg,#3b6978,#84a9ac);"></div></div>
+          </div>
+        </div>
+        <div class="lib-tags">
+          <span class="tag">热力图</span><span class="tag">箱线图</span><span class="tag">回归图</span><span class="tag">分布图</span>
+        </div>
+      </div>
+
+      <!-- Scikit-learn -->
+      <div class="lib-card">
+        <div class="lib-header">
+          <div class="lib-logo" style="background:linear-gradient(135deg,#f7931e,#3498db); color:white; font-size:1rem;">SK</div>
+          <div>
+            <div class="lib-name">Scikit-learn</div>
+            <div class="lib-ver">机器学习 · v1.4+</div>
+          </div>
+        </div>
+        <div class="lib-desc">Python 机器学习的标准库，提供分类、回归、聚类、降维等 <mark>数百种算法</mark>，统一的 fit/predict 接口让模型切换极为便捷，也包含完整的评估与交叉验证工具。</div>
+        <div style="margin-bottom:12px;">
+          <div class="prog-row">
+            <div class="prog-label"><span>算法覆盖</span><span style="color:#f7931e;">97%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:97%;background:linear-gradient(90deg,#f7931e,#3498db);"></div></div>
+          </div>
+          <div class="prog-row">
+            <div class="prog-label"><span>生产稳定性</span><span style="color:#f7931e;">98%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:98%;background:linear-gradient(90deg,#f7931e,#3498db);"></div></div>
+          </div>
+        </div>
+        <div class="lib-tags">
+          <span class="tag">分类</span><span class="tag">回归</span><span class="tag">聚类</span><span class="tag">降维</span>
+        </div>
+      </div>
+
+      <!-- Jupyter -->
+      <div class="lib-card">
+        <div class="lib-header">
+          <div class="lib-logo" style="background:linear-gradient(135deg,#f37626,#f7a347); font-size:1.5rem;">🟠</div>
+          <div>
+            <div class="lib-name">Jupyter Notebook</div>
+            <div class="lib-ver">交互式开发环境</div>
+          </div>
+        </div>
+        <div class="lib-desc">数据科学家首选的 <mark>交互式开发环境</mark>，支持在单元格中混合执行代码、展示图表、编写 Markdown 文档，方便探索和分享数据分析过程。</div>
+        <div style="margin-bottom:12px;">
+          <div class="prog-row">
+            <div class="prog-label"><span>交互性</span><span style="color:#f37626;">99%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:99%;background:linear-gradient(90deg,#f37626,#f7a347);"></div></div>
+          </div>
+          <div class="prog-row">
+            <div class="prog-label"><span>可分享性</span><span style="color:#f37626;">96%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:96%;background:linear-gradient(90deg,#f37626,#f7a347);"></div></div>
+          </div>
+        </div>
+        <div class="lib-tags">
+          <span class="tag">交互执行</span><span class="tag">Markdown</span><span class="tag">图表内嵌</span><span class="tag">nbconvert</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== 代码示例 ===== -->
+<section>
+  <div class="container">
+    <div class="section-title">💻 实战代码示例</div>
+    <div class="section-sub">从数据读取到可视化的完整代码演示</div>
+
+    <!-- 示例1：数据读取与清洗 -->
+    <div style="margin-bottom:32px;">
+      <h3 style="margin-bottom:16px;color:#a5b4fc;font-size:1rem;">① 数据读取 &amp; 基础探索</h3>
+      <div class="code-section">
+        <div class="code-block">
+          <div class="code-header">
+            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+            <span class="code-filename">01_load_and_explore.py</span>
+          </div>
+          <pre><span class="kw">import</span> <span class="lib">pandas</span> <span class="kw">as</span> <span class="var">pd</span>
+<span class="kw">import</span> <span class="lib">numpy</span> <span class="kw">as</span> <span class="var">np</span>
+
+<span class="cm"># 读取 CSV 数据</span>
+<span class="var">df</span> = <span class="var">pd</span>.<span class="fn">read_csv</span>(<span class="str">'students.csv'</span>)
+
+<span class="cm"># 查看基本信息</span>
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">shape</span>)        <span class="cm"># (行数, 列数)</span>
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">dtypes</span>)       <span class="cm"># 每列数据类型</span>
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">head</span>(<span class="num">5</span>))      <span class="cm"># 前5行</span>
+
+<span class="cm"># 统计摘要</span>
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">describe</span>())
+
+<span class="cm"># 检查缺失值</span>
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">isnull</span>().<span class="fn">sum</span>())
+
+<span class="cm"># 各科均值</span>
+<span class="var">avg</span> = <span class="var">df</span>[[<span class="str">'数学'</span>, <span class="str">'英语'</span>, <span class="str">'语文'</span>]].<span class="fn">mean</span>()
+<span class="fn">print</span>(<span class="var">avg</span>)</pre>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;">
+          <div style="font-size:.85rem;color:var(--muted);margin-bottom:12px;">📌 关键 API 速查</div>
+          <div class="tbl-wrap">
+            <table>
+              <tr><th>方法</th><th>作用</th></tr>
+              <tr><td><code style="color:#60a5fa;">read_csv()</code></td><td>读取 CSV 文件</td></tr>
+              <tr><td><code style="color:#60a5fa;">df.shape</code></td><td>返回 (行, 列) 元组</td></tr>
+              <tr><td><code style="color:#60a5fa;">df.describe()</code></td><td>数值列统计摘要</td></tr>
+              <tr><td><code style="color:#60a5fa;">df.isnull()</code></td><td>检测缺失值</td></tr>
+              <tr><td><code style="color:#60a5fa;">df.dtypes</code></td><td>每列数据类型</td></tr>
+              <tr><td><code style="color:#60a5fa;">df.head(n)</code></td><td>查看前 n 行</td></tr>
+            </table>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="tip">
-        <div class="icon">🎉</div>
-        <p><strong>点击"关于"链接，内容切换但页面不刷新？</strong> 恭喜！你的第一个路由页面成功了！</p>
-      </div>
-    </section>
-
-    <!-- 注意事项 -->
-    <section class="section" id="notice">
-      <div class="section-header">
-        <div style="font-size:28px;">⚠️</div>
-        <div>
-          <div class="section-title">常见注意事项</div>
-          <div class="section-subtitle">初学者最容易踩的 6 个坑，提前看能少走很多弯路</div>
-        </div>
-      </div>
-
-      <div class="notice-grid">
-        <div class="notice-card nc-red">
-          <div class="nc-icon">🚨</div>
-          <div class="nc-title">忘记 .use(router)</div>
-          <div class="nc-body">在 <code class="inline">main.js</code> 里创建了路由但忘了挂载，<code class="inline">RouterLink</code> 和 <code class="inline">RouterView</code> 不会报错，但什么都不显示。<br><br>✅ 记住：<code class="inline">createApp(App).use(router).mount('#app')</code></div>
-        </div>
-
-        <div class="notice-card nc-orange">
-          <div class="nc-icon">📁</div>
-          <div class="nc-title">路径写错</div>
-          <div class="nc-body">导入文件时路径用 <code class="inline">../views/HomeView.vue</code>，<code class="inline">../</code> 表示上一级目录。<br><br>⚠️ 常见错误：<code class="inline">./views/...</code>（少了一个点，在 router 目录里找不到 views）</div>
-        </div>
-
-        <div class="notice-card nc-blue">
-          <div class="nc-icon">🔤</div>
-          <div class="nc-title">大小写敏感</div>
-          <div class="nc-body">文件名 <code class="inline">HomeView.vue</code> 和导入时的 <code class="inline">import HomeView from '...HomeView.vue'</code> 大小写必须完全一致。<br><br>⚠️ 在 Windows 下不报错，但部署到 Linux 服务器会出问题。</div>
-        </div>
-
-        <div class="notice-card nc-green">
-          <div class="nc-icon">🏷️</div>
-          <div class="nc-title">RouterLink 而非 &lt;a&gt;</div>
-          <div class="nc-body">导航跳转必须用 <code class="inline">&lt;RouterLink to="/路径"&gt;</code>，不能用普通的 <code class="inline">&lt;a href="/路径"&gt;</code>。<br><br>普通 &lt;a&gt; 会触发整页刷新，破坏 SPA 体验。</div>
-        </div>
-
-        <div class="notice-card nc-purple">
-          <div class="nc-icon">🖥️</div>
-          <div class="nc-title">RouterView 必须放在 App.vue</div>
-          <div class="nc-body">没有 <code class="inline">&lt;RouterView /&gt;</code>，路由页面内容没有地方显示。检查 <code class="inline">App.vue</code> 的 <code class="inline">&lt;template&gt;</code> 里有没有这个标签。</div>
-        </div>
-
-        <div class="notice-card nc-cyan">
-          <div class="nc-icon">🔄</div>
-          <div class="nc-title">修改后保存才生效</div>
-          <div class="nc-body">修改 <code class="inline">router/index.js</code> 后要按 <code class="inline">Ctrl + S</code> 保存，Vite 会自动热更新。如果没更新，试试刷新浏览器或重启 <code class="inline">npm run dev</code>。</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 总结 -->
-    <section class="section" id="summary" style="background: linear-gradient(135deg, var(--bg2), #1a2018);">
-      <div class="section-header">
-        <div style="font-size:28px;">📋</div>
-        <div>
-          <div class="section-title">步骤总结</div>
-          <div class="section-subtitle">按这个清单，每次添加新路由页面只需 5 分钟</div>
-        </div>
-      </div>
-
-      <div class="summary-steps">
-        <div class="sum-step">
-          <div class="sum-dot" style="background:rgba(88,166,255,0.15);color:var(--blue);border:1.5px solid rgba(88,166,255,0.4);">1</div>
-          <div class="sum-content">
-            <strong>在 src/views/ 下新建 XxxView.vue 文件</strong>
-            <span>在 <code class="inline">&lt;template&gt;</code> 里写好页面内容</span>
+    <!-- 示例2：数据清洗 -->
+    <div style="margin-bottom:32px;">
+      <h3 style="margin-bottom:16px;color:#fbbf24;font-size:1rem;">② 数据清洗 &amp; 预处理</h3>
+      <div class="code-section">
+        <div class="code-block">
+          <div class="code-header">
+            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+            <span class="code-filename">02_data_cleaning.py</span>
           </div>
+          <pre><span class="cm"># 填充缺失值</span>
+<span class="var">df</span>[<span class="str">'成绩'</span>].<span class="fn">fillna</span>(<span class="var">df</span>[<span class="str">'成绩'</span>].<span class="fn">mean</span>(), <span class="var">inplace</span>=<span class="kw">True</span>)
+
+<span class="cm"># 删除含缺失值的行</span>
+<span class="var">df</span>.<span class="fn">dropna</span>(<span class="var">subset</span>=[<span class="str">'姓名'</span>, <span class="str">'班级'</span>], <span class="var">inplace</span>=<span class="kw">True</span>)
+
+<span class="cm"># 删除重复行</span>
+<span class="var">df</span>.<span class="fn">drop_duplicates</span>(<span class="var">inplace</span>=<span class="kw">True</span>)
+
+<span class="cm"># 数据类型转换</span>
+<span class="var">df</span>[<span class="str">'成绩'</span>] = <span class="var">df</span>[<span class="str">'成绩'</span>].<span class="fn">astype</span>(<span class="fn">float</span>)
+<span class="var">df</span>[<span class="str">'日期'</span>] = <span class="var">pd</span>.<span class="fn">to_datetime</span>(<span class="var">df</span>[<span class="str">'日期'</span>])
+
+<span class="cm"># 过滤异常值（Z-score法）</span>
+<span class="var">z</span> = (<span class="var">df</span>[<span class="str">'成绩'</span>] - <span class="var">df</span>[<span class="str">'成绩'</span>].<span class="fn">mean</span>()) / <span class="var">df</span>[<span class="str">'成绩'</span>].<span class="fn">std</span>()
+<span class="var">df</span> = <span class="var">df</span>[<span class="var">z</span>.<span class="fn">abs</span>() &lt;= <span class="num">3</span>]
+
+<span class="cm"># 重命名列</span>
+<span class="var">df</span>.<span class="fn">rename</span>(<span class="var">columns</span>={<span class="str">'score'</span>: <span class="str">'成绩'</span>}, <span class="var">inplace</span>=<span class="kw">True</span>)</pre>
         </div>
-        <div class="sum-step">
-          <div class="sum-dot" style="background:rgba(63,185,80,0.15);color:var(--green);border:1.5px solid rgba(63,185,80,0.4);">2</div>
-          <div class="sum-content">
-            <strong>在 router/index.js 的 routes 数组里添加一条规则</strong>
-            <span><code class="inline">&#123; path: '/xxx', component: () =&gt; import('../views/XxxView.vue') &#125;</code></span>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:14px;">
+            <div style="color:#f87171;font-weight:700;margin-bottom:6px;font-size:.85rem;">⚠️ 缺失值处理策略</div>
+            <div style="font-size:.82rem;color:var(--muted);">
+              <div>• <strong style="color:var(--text);">均值/中位数填充</strong>：适合数值型数据，保留样本</div>
+              <div style="margin-top:4px;">• <strong style="color:var(--text);">众数填充</strong>：适合分类型数据</div>
+              <div style="margin-top:4px;">• <strong style="color:var(--text);">前向/后向填充</strong>：适合时序数据</div>
+              <div style="margin-top:4px;">• <strong style="color:var(--text);">直接删除</strong>：缺失率低且随机缺失时</div>
+            </div>
           </div>
-        </div>
-        <div class="sum-step">
-          <div class="sum-dot" style="background:rgba(210,153,34,0.15);color:var(--orange);border:1.5px solid rgba(210,153,34,0.4);">3</div>
-          <div class="sum-content">
-            <strong>在 App.vue 里添加导航链接</strong>
-            <span><code class="inline">&lt;RouterLink to="/xxx"&gt;页面名&lt;/RouterLink&gt;</code></span>
-          </div>
-        </div>
-        <div class="sum-step">
-          <div class="sum-dot" style="background:rgba(63,185,80,0.15);color:var(--green);border:1.5px solid rgba(63,185,80,0.4);">✓</div>
-          <div class="sum-content">
-            <strong>保存所有文件，浏览器里验证</strong>
-            <span>点击导航链接，看页面内容是否正常切换</span>
+          <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:10px;padding:14px;">
+            <div style="color:#fbbf24;font-weight:700;margin-bottom:6px;font-size:.85rem;">💡 异常值检测方法</div>
+            <div style="font-size:.82rem;color:var(--muted);">
+              <div>• <strong style="color:var(--text);">Z-score法</strong>：|z| &gt; 3 视为异常（正态分布）</div>
+              <div style="margin-top:4px;">• <strong style="color:var(--text);">IQR法</strong>：超出 Q1-1.5×IQR 或 Q3+1.5×IQR</div>
+              <div style="margin-top:4px;">• <strong style="color:var(--text);">业务规则</strong>：如成绩必须在 0~100</div>
+            </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <div style="margin-top:20px;padding:16px 20px;background:rgba(88,166,255,0.06);border:1px solid rgba(88,166,255,0.2);border-radius:8px;">
-        <p style="font-size:13px;color:var(--text2);margin-bottom:8px;">📦 完成上面步骤后，你的项目文件结构应该是这样：</p>
-        <div class="file-tree" style="margin:0;">
-          <span class="dir">src/</span><br>
-          &nbsp;&nbsp;├── <span class="dir">router/</span><br>
-          &nbsp;&nbsp;│   └── <span class="highlight">index.js</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">路由配置</span><br>
-          &nbsp;&nbsp;├── <span class="dir">views/</span><br>
-          &nbsp;&nbsp;│   ├── <span class="highlight">HomeView.vue</span>  &nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">首页</span><br>
-          &nbsp;&nbsp;│   └── <span class="highlight">AboutView.vue</span>  &nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">关于页</span><br>
-          &nbsp;&nbsp;├── <span class="file">App.vue</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">根组件（含RouterLink+RouterView）</span><br>
-          &nbsp;&nbsp;└── <span class="file">main.js</span>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text2);font-size:11px">入口（已挂载router）</span>
+    <!-- 示例3：可视化 -->
+    <div>
+      <h3 style="margin-bottom:16px;color:#34d399;font-size:1rem;">③ 数据可视化代码</h3>
+      <div class="code-section">
+        <div class="code-block">
+          <div class="code-header">
+            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+            <span class="code-filename">03_visualization.py</span>
+          </div>
+          <pre><span class="kw">import</span> <span class="lib">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>
+<span class="kw">import</span> <span class="lib">seaborn</span> <span class="kw">as</span> <span class="var">sns</span>
+
+<span class="cm"># 设置中文字体</span>
+<span class="var">plt</span>.<span class="fn">rcParams</span>[<span class="str">'font.sans-serif'</span>] = [<span class="str">'SimHei'</span>]
+
+<span class="cm"># 1. 折线图（趋势）</span>
+<span class="var">plt</span>.<span class="fn">plot</span>(<span class="var">df</span>[<span class="str">'月份'</span>], <span class="var">df</span>[<span class="str">'销售额'</span>],
+         <span class="var">marker</span>=<span class="str">'o'</span>, <span class="var">color</span>=<span class="str">'#3b82f6'</span>)
+<span class="var">plt</span>.<span class="fn">title</span>(<span class="str">'月度销售趋势'</span>)
+
+<span class="cm"># 2. 热力图（相关性）</span>
+<span class="var">corr</span> = <span class="var">df</span>.<span class="fn">corr</span>()
+<span class="var">sns</span>.<span class="fn">heatmap</span>(<span class="var">corr</span>, <span class="var">annot</span>=<span class="kw">True</span>,
+             <span class="var">cmap</span>=<span class="str">'coolwarm'</span>, <span class="var">center</span>=<span class="num">0</span>)
+
+<span class="cm"># 3. 箱线图（分布）</span>
+<span class="var">sns</span>.<span class="fn">boxplot</span>(<span class="var">x</span>=<span class="str">'班级'</span>, <span class="var">y</span>=<span class="str">'成绩'</span>, <span class="var">data</span>=<span class="var">df</span>,
+             <span class="var">palette</span>=<span class="str">'Set2'</span>)
+
+<span class="cm"># 4. 散点回归图</span>
+<span class="var">sns</span>.<span class="fn">regplot</span>(<span class="var">x</span>=<span class="str">'学习时长'</span>, <span class="var">y</span>=<span class="str">'成绩'</span>,
+             <span class="var">data</span>=<span class="var">df</span>, <span class="var">scatter_kws</span>={<span class="str">'alpha'</span>:<span class="num">0.5</span>})
+
+<span class="var">plt</span>.<span class="fn">tight_layout</span>()
+<span class="var">plt</span>.<span class="fn">savefig</span>(<span class="str">'analysis.png'</span>, <span class="var">dpi</span>=<span class="num">150</span>)</pre>
+        </div>
+
+        <!-- 图表类型速查 -->
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;">
+          <div style="font-size:.85rem;color:var(--muted);margin-bottom:12px;">📊 常见图表选择指南</div>
+          <div class="tbl-wrap">
+            <table>
+              <tr><th>数据目的</th><th>推荐图表</th><th>函数</th></tr>
+              <tr><td>时间趋势</td><td>折线图</td><td><code style="color:#60a5fa;">plt.plot()</code></td></tr>
+              <tr><td>类别比较</td><td>柱状图</td><td><code style="color:#60a5fa;">plt.bar()</code></td></tr>
+              <tr><td>分布形状</td><td>直方图</td><td><code style="color:#60a5fa;">plt.hist()</code></td></tr>
+              <tr><td>相关关系</td><td>散点图</td><td><code style="color:#60a5fa;">plt.scatter()</code></td></tr>
+              <tr><td>变量相关</td><td>热力图</td><td><code style="color:#60a5fa;">sns.heatmap()</code></td></tr>
+              <tr><td>离群值</td><td>箱线图</td><td><code style="color:#60a5fa;">sns.boxplot()</code></td></tr>
+              <tr><td>占比构成</td><td>饼图</td><td><code style="color:#60a5fa;">plt.pie()</code></td></tr>
+            </table>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
 
-  </main>
-</div>
+  </div>
+</section>
 
-<!-- 底部 -->
-<div class="footer">
-  <p>🌱 前端初学者路由指南 · 基于 Vue 3 + Vue Router 4 + Vite</p>
-  <p style="margin-top:4px;">有问题随时问，多写多练是最快的进步方式 💪</p>
-</div>
+<div class="divider"></div>
 
-<!-- 侧边导航滚动高亮 -->
-<script>
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.sidebar a');
+<!-- ===== SVG 可视化图解 ===== -->
+<section style="background:#111827;">
+  <div class="container">
+    <div class="section-title">📈 可视化图表图解</div>
+    <div class="section-sub">常用 Python 数据可视化图表类型演示</div>
 
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 80) current = s.id;
-    });
-    navLinks.forEach(a => {
-      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
-    });
-  });
-</script>
+    <div class="visual-grid">
+
+      <!-- 柱状图 -->
+      <div class="visual-card">
+        <div class="visual-chart">
+          <svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
+            <defs>
+              <linearGradient id="bar1" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient>
+              <linearGradient id="bar2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#065f46"/></linearGradient>
+              <linearGradient id="bar3" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#6b21a8"/></linearGradient>
+              <linearGradient id="bar4" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#92400e"/></linearGradient>
+              <linearGradient id="bar5" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#991b1b"/></linearGradient>
+            </defs>
+            <!-- grid lines -->
+            <line x1="40" y1="20" x2="40" y2="145" stroke="#334155" stroke-width="1"/>
+            <line x1="40" y1="145" x2="290" y2="145" stroke="#334155" stroke-width="1"/>
+            <line x1="40" y1="60" x2="290" y2="60" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="100" x2="290" y2="100" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,3"/>
+            <!-- bars -->
+            <rect x="55"  y="75"  width="32" height="70" rx="4" fill="url(#bar1)"/>
+            <rect x="105" y="55"  width="32" height="90" rx="4" fill="url(#bar2)"/>
+            <rect x="155" y="90"  width="32" height="55" rx="4" fill="url(#bar3)"/>
+            <rect x="205" y="40"  width="32" height="105" rx="4" fill="url(#bar4)"/>
+            <rect x="255" y="65"  width="32" height="80" rx="4" fill="url(#bar5)"/>
+            <!-- labels -->
+            <text x="71"  y="158" text-anchor="middle" class="chart-label">语文</text>
+            <text x="121" y="158" text-anchor="middle" class="chart-label">数学</text>
+            <text x="171" y="158" text-anchor="middle" class="chart-label">英语</text>
+            <text x="221" y="158" text-anchor="middle" class="chart-label">物理</text>
+            <text x="271" y="158" text-anchor="middle" class="chart-label">化学</text>
+            <!-- values -->
+            <text x="71"  y="70"  text-anchor="middle" class="chart-val">82</text>
+            <text x="121" y="50"  text-anchor="middle" class="chart-val">91</text>
+            <text x="171" y="85"  text-anchor="middle" class="chart-val">76</text>
+            <text x="221" y="35"  text-anchor="middle" class="chart-val">95</text>
+            <text x="271" y="60"  text-anchor="middle" class="chart-val">88</text>
+            <text x="165" y="12"  text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="bold">各科平均分对比</text>
+          </svg>
+        </div>
+        <div class="visual-info">
+          <div class="visual-title">柱状图 (Bar Chart)</div>
+          <div class="visual-desc">用于比较不同类别的数值大小，适合展示各组之间的对比关系。代码：<code style="color:#60a5fa;">plt.bar()</code></div>
+        </div>
+      </div>
+
+      <!-- 折线图 -->
+      <div class="visual-card">
+        <div class="visual-chart">
+          <svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
+            <defs>
+              <linearGradient id="linegrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#3b82f6" stop-opacity=".3"/>
+                <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- grid -->
+            <line x1="35" y1="20" x2="35" y2="145" stroke="#334155" stroke-width="1"/>
+            <line x1="35" y1="145" x2="285" y2="145" stroke="#334155" stroke-width="1"/>
+            <line x1="35" y1="50"  x2="285" y2="50"  stroke="#1e293b" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="35" y1="95"  x2="285" y2="95"  stroke="#1e293b" stroke-width="1" stroke-dasharray="4,3"/>
+            <!-- area fill -->
+            <polygon points="35,145 60,115 110,90 160,70 210,55 260,75 285,60 285,145" fill="url(#linegrad)"/>
+            <!-- line -->
+            <polyline points="60,115 110,90 160,70 210,55 260,75 285,60" stroke="#3b82f6" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
+            <!-- second line -->
+            <polyline points="60,130 110,118 160,105 210,98 260,88 285,95" stroke="#10b981" stroke-width="2" fill="none" stroke-linejoin="round" stroke-dasharray="5,3"/>
+            <!-- dots -->
+            <circle cx="60"  cy="115" r="4" fill="#3b82f6"/>
+            <circle cx="110" cy="90"  r="4" fill="#3b82f6"/>
+            <circle cx="160" cy="70"  r="4" fill="#3b82f6"/>
+            <circle cx="210" cy="55"  r="4" fill="#3b82f6"/>
+            <circle cx="260" cy="75"  r="4" fill="#3b82f6"/>
+            <circle cx="285" cy="60"  r="4" fill="#3b82f6"/>
+            <!-- labels -->
+            <text x="60"  y="158" text-anchor="middle" class="chart-label">1月</text>
+            <text x="110" y="158" text-anchor="middle" class="chart-label">2月</text>
+            <text x="160" y="158" text-anchor="middle" class="chart-label">3月</text>
+            <text x="210" y="158" text-anchor="middle" class="chart-label">4月</text>
+            <text x="260" y="158" text-anchor="middle" class="chart-label">5月</text>
+            <!-- legend -->
+            <line x1="50" y1="12" x2="70" y2="12" stroke="#3b82f6" stroke-width="2"/>
+            <text x="75" y="15" fill="#94a3b8" font-size="9">今年</text>
+            <line x1="115" y1="12" x2="135" y2="12" stroke="#10b981" stroke-width="2" stroke-dasharray="5,3"/>
+            <text x="140" y="15" fill="#94a3b8" font-size="9">去年</text>
+            <text x="165" y="12" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="bold">月度销售趋势</text>
+          </svg>
+        </div>
+        <div class="visual-info">
+          <div class="visual-title">折线图 (Line Chart)</div>
+          <div class="visual-desc">展示数据随时间的变化趋势，支持多系列对比。代码：<code style="color:#60a5fa;">plt.plot()</code></div>
+        </div>
+      </div>
+
+      <!-- 散点图 + 回归线 -->
+      <div class="visual-card">
+        <div class="visual-chart">
+          <svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
+            <!-- grid -->
+            <line x1="35" y1="15" x2="35" y2="145" stroke="#334155" stroke-width="1"/>
+            <line x1="35" y1="145" x2="285" y2="145" stroke="#334155" stroke-width="1"/>
+            <line x1="35" y1="55"  x2="285" y2="55"  stroke="#1e293b" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="35" y1="100" x2="285" y2="100" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,3"/>
+            <!-- regression line -->
+            <line x1="50" y1="128" x2="275" y2="30" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="6,3" opacity=".8"/>
+            <!-- scatter points -->
+            <circle cx="60"  cy="120" r="5" fill="#6366f1" opacity=".8"/>
+            <circle cx="80"  cy="108" r="5" fill="#6366f1" opacity=".8"/>
+            <circle cx="95"  cy="105" r="5" fill="#6366f1" opacity=".8"/>
+            <circle cx="115" cy="90"  r="5" fill="#6366f1" opacity=".8"/>
+            <circle cx="130" cy="88"  r="5" fill="#6366f1" opacity=".8"/>
+            <circle cx="150" cy="72"  r="5" fill="#a855f7" opacity=".8"/>
+            <circle cx="165" cy="68"  r="5" fill="#a855f7" opacity=".8"/>
+            <circle cx="180" cy="62"  r="5" fill="#a855f7" opacity=".8"/>
+            <circle cx="200" cy="58"  r="5" fill="#a855f7" opacity=".8"/>
+            <circle cx="220" cy="50"  r="5" fill="#a855f7" opacity=".8"/>
+            <circle cx="240" cy="48"  r="5" fill="#ec4899" opacity=".8"/>
+            <circle cx="260" cy="38"  r="5" fill="#ec4899" opacity=".8"/>
+            <!-- outlier -->
+            <circle cx="100" cy="130" r="5" fill="#f59e0b" opacity=".9"/>
+            <line x1="100" y1="125" x2="90" y2="115" stroke="#f59e0b" stroke-width="1"/>
+            <text x="82" y="112" fill="#f59e0b" font-size="8">异常值</text>
+            <!-- axis labels -->
+            <text x="160" y="160" text-anchor="middle" class="chart-label">学习时长 (小时)</text>
+            <text x="18"  y="82"  text-anchor="middle" class="chart-label" transform="rotate(-90,18,82)">成绩</text>
+            <!-- R² -->
+            <text x="260" y="138" fill="#ef4444" font-size="9">R²=0.87</text>
+            <text x="165" y="12"  text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="bold">学习时长 vs 成绩散点图</text>
+          </svg>
+        </div>
+        <div class="visual-info">
+          <div class="visual-title">散点图 + 回归线 (Scatter + Regression)</div>
+          <div class="visual-desc">展示两个变量之间的相关关系，回归线显示趋势，R² 值衡量拟合度。代码：<code style="color:#60a5fa;">sns.regplot()</code></div>
+        </div>
+      </div>
+
+      <!-- 热力图 -->
+      <div class="visual-card">
+        <div class="visual-chart">
+          <svg viewBox="0 0 300 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
+            <!-- Heatmap cells 5x5 -->
+            <!-- row labels -->
+            <text x="48" y="52" text-anchor="end" class="chart-label">语文</text>
+            <text x="48" y="82" text-anchor="end" class="chart-label">数学</text>
+            <text x="48" y="112" text-anchor="end" class="chart-label">英语</text>
+            <text x="48" y="142" text-anchor="end" class="chart-label">物理</text>
+            <text x="48" y="172" text-anchor="end" class="chart-label">化学</text>
+            <!-- col labels -->
+            <text x="72"  y="22" text-anchor="middle" class="chart-label">语文</text>
+            <text x="112" y="22" text-anchor="middle" class="chart-label">数学</text>
+            <text x="152" y="22" text-anchor="middle" class="chart-label">英语</text>
+            <text x="192" y="22" text-anchor="middle" class="chart-label">物理</text>
+            <text x="232" y="22" text-anchor="middle" class="chart-label">化学</text>
+            <!-- Row 1 -->
+            <rect x="52" y="30" width="38" height="28" rx="3" fill="#b91c1c"/>
+            <rect x="92" y="30" width="38" height="28" rx="3" fill="#3d6e8a"/>
+            <rect x="132" y="30" width="38" height="28" rx="3" fill="#5b8ea0"/>
+            <rect x="172" y="30" width="38" height="28" rx="3" fill="#2a5a72"/>
+            <rect x="212" y="30" width="38" height="28" rx="3" fill="#1e4a62"/>
+            <!-- Row 2 -->
+            <rect x="52" y="60" width="38" height="28" rx="3" fill="#3d6e8a"/>
+            <rect x="92" y="60" width="38" height="28" rx="3" fill="#b91c1c"/>
+            <rect x="132" y="60" width="38" height="28" rx="3" fill="#a03030"/>
+            <rect x="172" y="60" width="38" height="28" rx="3" fill="#8b4040"/>
+            <rect x="212" y="60" width="38" height="28" rx="3" fill="#7a5050"/>
+            <!-- Row 3 -->
+            <rect x="52" y="90" width="38" height="28" rx="3" fill="#5b8ea0"/>
+            <rect x="92" y="90" width="38" height="28" rx="3" fill="#a03030"/>
+            <rect x="132" y="90" width="38" height="28" rx="3" fill="#b91c1c"/>
+            <rect x="172" y="90" width="38" height="28" rx="3" fill="#956060"/>
+            <rect x="212" y="90" width="38" height="28" rx="3" fill="#2a5a72"/>
+            <!-- Row 4 -->
+            <rect x="52" y="120" width="38" height="28" rx="3" fill="#2a5a72"/>
+            <rect x="92" y="120" width="38" height="28" rx="3" fill="#8b4040"/>
+            <rect x="132" y="120" width="38" height="28" rx="3" fill="#956060"/>
+            <rect x="172" y="120" width="38" height="28" rx="3" fill="#b91c1c"/>
+            <rect x="212" y="120" width="38" height="28" rx="3" fill="#7a8090"/>
+            <!-- Row 5 -->
+            <rect x="52" y="150" width="38" height="28" rx="3" fill="#1e4a62"/>
+            <rect x="92" y="150" width="38" height="28" rx="3" fill="#7a5050"/>
+            <rect x="132" y="150" width="38" height="28" rx="3" fill="#2a5a72"/>
+            <rect x="172" y="150" width="38" height="28" rx="3" fill="#7a8090"/>
+            <rect x="212" y="150" width="38" height="28" rx="3" fill="#b91c1c"/>
+            <!-- cell values (diag = 1.0) -->
+            <text x="71" y="49" text-anchor="middle" class="chart-val">1.0</text>
+            <text x="111" y="79" text-anchor="middle" class="chart-val">1.0</text>
+            <text x="151" y="109" text-anchor="middle" class="chart-val">1.0</text>
+            <text x="191" y="139" text-anchor="middle" class="chart-val">1.0</text>
+            <text x="231" y="169" text-anchor="middle" class="chart-val">1.0</text>
+            <text x="111" y="49" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">0.32</text>
+            <text x="151" y="49" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">0.45</text>
+            <text x="71" y="79" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">0.32</text>
+            <text x="151" y="79" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">0.71</text>
+            <text x="191" y="79" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9">0.68</text>
+          </svg>
+        </div>
+        <div class="visual-info">
+          <div class="visual-title">热力图 (Heatmap)</div>
+          <div class="visual-desc">用颜色深浅表示变量间的相关系数，快速发现强相关特征对。代码：<code style="color:#60a5fa;">sns.heatmap(df.corr())</code></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== 机器学习流程 ===== -->
+<section>
+  <div class="container">
+    <div class="section-title">🤖 从数据到模型</div>
+    <div class="section-sub">Scikit-learn 标准机器学习工作流详解</div>
+
+    <div class="code-section" style="margin-bottom:32px;">
+      <div class="code-block">
+        <div class="code-header">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="code-filename">04_machine_learning.py</span>
+        </div>
+        <pre><span class="kw">from</span> <span class="lib">sklearn.model_selection</span> <span class="kw">import</span> <span class="fn">train_test_split</span>
+<span class="kw">from</span> <span class="lib">sklearn.preprocessing</span> <span class="kw">import</span> <span class="fn">StandardScaler</span>
+<span class="kw">from</span> <span class="lib">sklearn.linear_model</span> <span class="kw">import</span> <span class="fn">LinearRegression</span>
+<span class="kw">from</span> <span class="lib">sklearn.ensemble</span> <span class="kw">import</span> <span class="fn">RandomForestClassifier</span>
+<span class="kw">from</span> <span class="lib">sklearn.metrics</span> <span class="kw">import</span> <span class="fn">accuracy_score</span>, <span class="fn">r2_score</span>
+
+<span class="cm"># ① 准备特征和标签</span>
+<span class="var">X</span> = <span class="var">df</span>[[<span class="str">'学习时长'</span>, <span class="str">'出勤率'</span>, <span class="str">'作业完成率'</span>]]
+<span class="var">y</span> = <span class="var">df</span>[<span class="str">'是否优秀'</span>]
+
+<span class="cm"># ② 划分训练集和测试集</span>
+<span class="var">X_train</span>, <span class="var">X_test</span>, <span class="var">y_train</span>, <span class="var">y_test</span> = <span class="fn">train_test_split</span>(
+    <span class="var">X</span>, <span class="var">y</span>, <span class="var">test_size</span>=<span class="num">0.2</span>, <span class="var">random_state</span>=<span class="num">42</span>)
+
+<span class="cm"># ③ 特征标准化</span>
+<span class="var">scaler</span> = <span class="fn">StandardScaler</span>()
+<span class="var">X_train</span> = <span class="var">scaler</span>.<span class="fn">fit_transform</span>(<span class="var">X_train</span>)
+<span class="var">X_test</span>  = <span class="var">scaler</span>.<span class="fn">transform</span>(<span class="var">X_test</span>)
+
+<span class="cm"># ④ 训练模型</span>
+<span class="var">model</span> = <span class="fn">RandomForestClassifier</span>(<span class="var">n_estimators</span>=<span class="num">100</span>)
+<span class="var">model</span>.<span class="fn">fit</span>(<span class="var">X_train</span>, <span class="var">y_train</span>)
+
+<span class="cm"># ⑤ 预测与评估</span>
+<span class="var">y_pred</span> = <span class="var">model</span>.<span class="fn">predict</span>(<span class="var">X_test</span>)
+<span class="fn">print</span>(<span class="fn">accuracy_score</span>(<span class="var">y_test</span>, <span class="var">y_pred</span>))  <span class="cm"># 0.92</span></pre>
+      </div>
+
+      <!-- 算法对比 -->
+      <div>
+        <div class="cmp-grid">
+          <div class="cmp-card">
+            <div class="cmp-title" style="color:#60a5fa;">🔵 监督学习算法</div>
+            <div class="cmp-item"><span class="cmp-icon">📈</span><div><strong>线性回归</strong> — 连续值预测，可解释性强</div></div>
+            <div class="cmp-item"><span class="cmp-icon">🌲</span><div><strong>随机森林</strong> — 分类/回归，抗过拟合</div></div>
+            <div class="cmp-item"><span class="cmp-icon">🎯</span><div><strong>SVM</strong> — 高维数据，效果稳定</div></div>
+            <div class="cmp-item"><span class="cmp-icon">🧠</span><div><strong>XGBoost</strong> — 竞赛利器，效果卓越</div></div>
+          </div>
+          <div class="cmp-card">
+            <div class="cmp-title" style="color:#34d399;">🟢 无监督学习算法</div>
+            <div class="cmp-item"><span class="cmp-icon">🔵</span><div><strong>K-Means</strong> — 聚类分析，简单高效</div></div>
+            <div class="cmp-item"><span class="cmp-icon">📉</span><div><strong>PCA</strong> — 降维，去除冗余特征</div></div>
+            <div class="cmp-item"><span class="cmp-icon">🕸️</span><div><strong>DBSCAN</strong> — 密度聚类，检测异常</div></div>
+            <div class="cmp-item"><span class="cmp-icon">🗺️</span><div><strong>t-SNE</strong> — 高维可视化降维</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 模型评估指标 -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;">
+      <div style="font-size:1rem;font-weight:700;margin-bottom:16px;">📐 模型评估指标速查</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">
+        <div style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:14px;">
+          <div style="color:#60a5fa;font-weight:700;margin-bottom:6px;">分类任务</div>
+          <div style="font-size:.82rem;color:var(--muted);">
+            <div>• <strong style="color:var(--text);">准确率</strong> accuracy_score</div>
+            <div>• <strong style="color:var(--text);">精确率</strong> precision_score</div>
+            <div>• <strong style="color:var(--text);">召回率</strong> recall_score</div>
+            <div>• <strong style="color:var(--text);">F1</strong> f1_score</div>
+          </div>
+        </div>
+        <div style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px;">
+          <div style="color:#34d399;font-weight:700;margin-bottom:6px;">回归任务</div>
+          <div style="font-size:.82rem;color:var(--muted);">
+            <div>• <strong style="color:var(--text);">R²</strong> r2_score</div>
+            <div>• <strong style="color:var(--text);">MAE</strong> mean_absolute_error</div>
+            <div>• <strong style="color:var(--text);">MSE</strong> mean_squared_error</div>
+            <div>• <strong style="color:var(--text);">RMSE</strong> √MSE</div>
+          </div>
+        </div>
+        <div style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:10px;padding:14px;">
+          <div style="color:#c084fc;font-weight:700;margin-bottom:6px;">验证方法</div>
+          <div style="font-size:.82rem;color:var(--muted);">
+            <div>• <strong style="color:var(--text);">Hold-out</strong> 简单划分</div>
+            <div>• <strong style="color:var(--text);">K-fold CV</strong> 交叉验证</div>
+            <div>• <strong style="color:var(--text);">Learning curve</strong> 诊断偏差/方差</div>
+            <div>• <strong style="color:var(--text);">混淆矩阵</strong> 分类详情</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== 学习路径 ===== -->
+<section style="background:#111827;">
+  <div class="container">
+    <div class="section-title">🗺️ 学习路径建议</div>
+    <div class="section-sub">从零基础到数据分析工程师的系统学习路线</div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Python 基础语法（2-4周）</h3>
+          <p>变量与数据类型、列表/字典/元组、函数与类、文件读写、异常处理。推荐资源：《Python编程：从入门到实践》</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>NumPy 与 Pandas 基础（2-3周）</h3>
+          <p>数组操作、DataFrame 增删改查、数据合并（merge/concat）、分组聚合（groupby）、时间序列处理。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>数据可视化（1-2周）</h3>
+          <p>Matplotlib 基础绘图、Seaborn 统计图表、图表美化技巧、交互式图表（Plotly/Pyecharts）。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>统计分析基础（2-3周）</h3>
+          <p>描述统计、概率分布、假设检验、相关分析、方差分析。工具：SciPy、Statsmodels。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h3>机器学习入门（4-6周）</h3>
+          <p>Scikit-learn 工作流、线性模型/树模型/集成模型、特征工程、模型选择与调参。推荐：Kaggle 入门竞赛练习。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h3>实战项目（持续）</h3>
+          <p>完成 2-3 个端到端项目（销售分析、用户画像、预测模型），整理到 GitHub，参加 Kaggle 竞赛。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== 常用操作速查表 ===== -->
+<section>
+  <div class="container">
+    <div class="section-title">📋 Pandas 常用操作速查</div>
+    <div class="section-sub">日常数据分析中最常用的 Pandas 操作汇总</div>
+
+    <div class="tbl-wrap">
+      <table>
+        <tr>
+          <th>操作类型</th>
+          <th>代码示例</th>
+          <th>说明</th>
+        </tr>
+        <tr><td>读取数据</td><td><code style="color:#60a5fa;">pd.read_csv('f.csv', encoding='utf-8')</code></td><td>读取 CSV，指定编码</td></tr>
+        <tr><td>选择列</td><td><code style="color:#60a5fa;">df[['A','B']]</code></td><td>选取多列</td></tr>
+        <tr><td>条件过滤</td><td><code style="color:#60a5fa;">df[df['成绩'] > 80]</code></td><td>按条件筛选行</td></tr>
+        <tr><td>新增列</td><td><code style="color:#60a5fa;">df['总分'] = df['数学'] + df['语文']</code></td><td>通过计算新增列</td></tr>
+        <tr><td>分组聚合</td><td><code style="color:#60a5fa;">df.groupby('班级')['成绩'].mean()</code></td><td>按班级求均值</td></tr>
+        <tr><td>数据合并</td><td><code style="color:#60a5fa;">pd.merge(df1, df2, on='学号')</code></td><td>按学号内连接</td></tr>
+        <tr><td>透视表</td><td><code style="color:#60a5fa;">df.pivot_table(values='成绩', index='班级', columns='科目', aggfunc='mean')</code></td><td>多维聚合</td></tr>
+        <tr><td>排序</td><td><code style="color:#60a5fa;">df.sort_values('成绩', ascending=False)</code></td><td>按成绩降序</td></tr>
+        <tr><td>应用函数</td><td><code style="color:#60a5fa;">df['等级'] = df['成绩'].apply(lambda x: '优' if x>=90 else '良')</code></td><td>自定义映射</td></tr>
+        <tr><td>导出数据</td><td><code style="color:#60a5fa;">df.to_excel('result.xlsx', index=False)</code></td><td>导出 Excel</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div>📊 Python 数据分析全面指南 · 数据2501班 · 2026</div>
+  <div style="margin-top:6px;">核心库：<span>NumPy</span> · <span>Pandas</span> · <span>Matplotlib</span> · <span>Seaborn</span> · <span>Scikit-learn</span></div>
+</footer>
 
 </body>
 </html>
