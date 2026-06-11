@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JavaScript vs TypeScript 全面对比</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: #0f0f1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      padding: 60px 20px 50px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 30% 50%, rgba(247,223,30,0.06) 0%, transparent 60%),
+                  radial-gradient(circle at 70% 50%, rgba(49,120,198,0.08) 0%, transparent 60%);
+    }
+    .hero-badges {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 28px;
+      position: relative;
+    }
+    .badge {
+      width: 90px; height: 90px;
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem; font-weight: 900;
+      letter-spacing: -1px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .badge-js { background: #f7df1e; color: #000; }
+    .badge-ts { background: #3178c6; color: #fff; }
+    .vs-circle {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      border: 2px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700; color: #aaa;
+      align-self: center;
+    }
+    .hero h1 {
+      font-size: 2.2rem; font-weight: 800;
+      background: linear-gradient(90deg, #f7df1e, #3178c6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      position: relative; margin-bottom: 12px;
+    }
+    .hero p {
+      font-size: 1.05rem; color: #9da8b7;
+      position: relative;
+    }
+
+    /* ===== NAV TABS ===== */
+    .nav {
+      display: flex; justify-content: center; gap: 8px;
+      padding: 28px 20px 0;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 10px 22px; border-radius: 50px;
+      border: 1.5px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: #9da8b7; cursor: pointer;
+      font-size: 0.9rem; transition: all 0.25s;
+    }
+    .tab-btn:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #f7df1e22, #3178c622);
+      border-color: #3178c6; color: #fff;
+    }
+
+    /* ===== SECTIONS ===== */
+    .container { max-width: 1100px; margin: 0 auto; padding: 36px 20px 60px; }
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ===== SECTION TITLE ===== */
+    .section-title {
+      font-size: 1.4rem; font-weight: 700;
+      margin-bottom: 24px; padding-left: 14px;
+      border-left: 4px solid #3178c6;
+    }
+
+    /* ===== SUMMARY TABLE ===== */
+    .table-wrap { overflow-x: auto; border-radius: 16px; }
+    table {
+      width: 100%; border-collapse: collapse;
+      background: rgba(255,255,255,0.03);
+    }
+    thead tr { background: rgba(49,120,198,0.2); }
+    th {
+      padding: 14px 18px; text-align: left;
+      font-weight: 700; font-size: 0.9rem;
+      color: #7eb8f7; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    td {
+      padding: 13px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.93rem; line-height: 1.6;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.03); }
+    .tag-js {
+      background: #f7df1e22; color: #f7df1e;
+      padding: 2px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+    }
+    .tag-ts {
+      background: #3178c622; color: #7eb8f7;
+      padding: 2px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+    }
+    .tag-both {
+      background: rgba(100,200,100,0.15); color: #7de07d;
+      padding: 2px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+    }
+
+    /* ===== CODE CARDS ===== */
+    .code-grid { display: grid; gap: 24px; }
+    .code-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; overflow: hidden;
+    }
+    .code-card-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 20px;
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .code-card-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .code-card-header .title { font-weight: 700; font-size: 0.95rem; }
+    .code-card-header .subtitle { font-size: 0.8rem; color: #777; margin-left: auto; }
+    .code-pair { display: grid; grid-template-columns: 1fr 1fr; }
+    @media(max-width: 680px) { .code-pair { grid-template-columns: 1fr; } }
+    .code-col {
+      padding: 0;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+    .code-col:last-child { border-right: none; }
+    .code-col-label {
+      padding: 8px 16px;
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .js-label { color: #f7df1e; background: rgba(247,223,30,0.06); }
+    .ts-label { color: #7eb8f7; background: rgba(49,120,198,0.08); }
+    pre {
+      padding: 18px 20px;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.85rem; line-height: 1.7;
+      overflow-x: auto; white-space: pre;
+      color: #d0d0d0;
+    }
+    /* syntax highlight colors */
+    .kw  { color: #c792ea; }   /* keyword */
+    .fn  { color: #82aaff; }   /* function name */
+    .str { color: #c3e88d; }   /* string */
+    .num { color: #f78c6c; }   /* number */
+    .cmt { color: #546e7a; font-style: italic; }   /* comment */
+    .typ { color: #ffcb6b; }   /* type */
+    .err { color: #ff5370; }   /* error */
+    .ok  { color: #c3e88d; }   /* success */
+
+    .desc {
+      padding: 14px 20px;
+      font-size: 0.88rem; line-height: 1.7; color: #9da8b7;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .desc strong { color: #e0e0e0; }
+
+    /* ===== RELATIONSHIP DIAGRAM ===== */
+    .diagram-wrap {
+      display: flex; justify-content: center; padding: 20px 0 32px;
+    }
+    .diagram {
+      position: relative;
+      width: 340px; height: 340px;
+    }
+    .ring {
+      position: absolute; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; text-align: center;
+    }
+    .ring-ts {
+      width: 340px; height: 340px; top: 0; left: 0;
+      background: rgba(49,120,198,0.12);
+      border: 2px solid rgba(49,120,198,0.4);
+    }
+    .ring-js {
+      width: 220px; height: 220px;
+      top: 60px; left: 60px;
+      background: rgba(247,223,30,0.1);
+      border: 2px solid rgba(247,223,30,0.5);
+    }
+    .ring-label {
+      font-weight: 800; font-size: 1.1rem;
+    }
+    .ring-sub {
+      font-size: 0.72rem; color: #9da8b7; margin-top: 4px;
+    }
+    .ring-ts-extras {
+      position: absolute; top: 24px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.72rem; color: #7eb8f7;
+      white-space: nowrap;
+    }
+    .ts-features {
+      list-style: none; text-align: left;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      margin-top: 24px;
+    }
+    .ts-features li {
+      background: rgba(49,120,198,0.1);
+      border: 1px solid rgba(49,120,198,0.25);
+      border-radius: 10px; padding: 10px 14px;
+      font-size: 0.85rem; color: #b0c8e8;
+    }
+    .ts-features li::before { content: '✦ '; color: #3178c6; }
+
+    /* ===== WORKFLOW ===== */
+    .flow {
+      display: flex; align-items: center; gap: 10px;
+      flex-wrap: wrap; justify-content: center;
+      margin: 32px 0;
+    }
+    .flow-step {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px; padding: 18px 22px;
+      text-align: center; min-width: 120px;
+    }
+    .flow-step .icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .flow-step .name { font-size: 0.88rem; font-weight: 700; }
+    .flow-step .note { font-size: 0.72rem; color: #777; margin-top: 4px; }
+    .flow-arrow { font-size: 1.4rem; color: #555; }
+
+    /* ===== WHEN TO USE ===== */
+    .use-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media(max-width: 600px) { .use-grid { grid-template-columns: 1fr; } }
+    .use-card {
+      border-radius: 16px; padding: 24px;
+      border: 1px solid;
+    }
+    .use-card-js {
+      background: rgba(247,223,30,0.05);
+      border-color: rgba(247,223,30,0.25);
+    }
+    .use-card-ts {
+      background: rgba(49,120,198,0.07);
+      border-color: rgba(49,120,198,0.3);
+    }
+    .use-card h3 {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.1rem; margin-bottom: 16px;
+    }
+    .use-card ul { list-style: none; }
+    .use-card ul li {
+      padding: 7px 0;
+      font-size: 0.9rem; color: #c0c8d4;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .use-card ul li:last-child { border-bottom: none; }
+    .icon-js { color: #f7df1e; }
+    .icon-ts { color: #7eb8f7; }
+
+    /* ===== TIPS ===== */
+    .tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .tip-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px; padding: 20px;
+    }
+    .tip-card .tip-icon { font-size: 1.6rem; margin-bottom: 10px; }
+    .tip-card h4 { font-size: 0.95rem; margin-bottom: 8px; color: #e0e0e0; }
+    .tip-card p { font-size: 0.85rem; color: #9da8b7; line-height: 1.6; }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      text-align: center; padding: 30px;
+      font-size: 0.8rem; color: #444;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badges">
+    <div class="badge badge-js">JS</div>
+    <div class="vs-circle">VS</div>
+    <div class="badge badge-ts">TS</div>
+  </div>
+  <h1>JavaScript vs TypeScript</h1>
+  <p>前端开发语言全面对比 · 从入门到选型</p>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="tab-btn active" onclick="switchTab('overview')">📋 核心对比</button>
+  <button class="tab-btn" onclick="switchTab('code')">💻 代码示例</button>
+  <button class="tab-btn" onclick="switchTab('relation')">🔗 关系结构</button>
+  <button class="tab-btn" onclick="switchTab('when')">🎯 选型指南</button>
+  <button class="tab-btn" onclick="switchTab('tips')">💡 学习建议</button>
+</div>
+
+<div class="container">
+
+  <!-- ===== 核心对比 ===== -->
+  <div id="overview" class="section active">
+    <div class="section-title">核心特性对比</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>特性</th>
+            <th>JavaScript</th>
+            <th>TypeScript</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>类型系统</strong></td>
+            <td>动态类型，运行时才确定变量类型</td>
+            <td>静态类型，编译阶段就能检查类型错误</td>
+          </tr>
+          <tr>
+            <td><strong>运行方式</strong></td>
+            <td><span class="tag-js">直接运行</span> 浏览器 / Node.js 原生支持</td>
+            <td><span class="tag-ts">编译运行</span> 先用 tsc 编译成 JS 再运行</td>
+          </tr>
+          <tr>
+            <td><strong>文件扩展名</strong></td>
+            <td><code>.js</code> &nbsp;/&nbsp; <code>.jsx</code></td>
+            <td><code>.ts</code> &nbsp;/&nbsp; <code>.tsx</code></td>
+          </tr>
+          <tr>
+            <td><strong>与对方的关系</strong></td>
+            <td>TypeScript 的编译目标</td>
+            <td>JS 的超集，所有 JS 代码都是合法 TS</td>
+          </tr>
+          <tr>
+            <td><strong>错误发现时机</strong></td>
+            <td>❌ 运行时才报错（用户能看到）</td>
+            <td>✅ 编译时报错（开发阶段就能发现）</td>
+          </tr>
+          <tr>
+            <td><strong>IDE 支持</strong></td>
+            <td>基础补全</td>
+            <td>精准类型推断、智能提示、跳转定义</td>
+          </tr>
+          <tr>
+            <td><strong>接口 Interface</strong></td>
+            <td><span class="tag-js">不支持</span></td>
+            <td><span class="tag-ts">原生支持</span></td>
+          </tr>
+          <tr>
+            <td><strong>泛型 Generic</strong></td>
+            <td><span class="tag-js">不支持</span></td>
+            <td><span class="tag-ts">原生支持</span></td>
+          </tr>
+          <tr>
+            <td><strong>枚举 Enum</strong></td>
+            <td><span class="tag-js">不支持</span></td>
+            <td><span class="tag-ts">原生支持</span></td>
+          </tr>
+          <tr>
+            <td><strong>装饰器</strong></td>
+            <td>提案阶段</td>
+            <td><span class="tag-ts">支持（实验性）</span></td>
+          </tr>
+          <tr>
+            <td><strong>类 Class</strong></td>
+            <td><span class="tag-both">支持</span></td>
+            <td><span class="tag-both">支持（+ 访问修饰符）</span></td>
+          </tr>
+          <tr>
+            <td><strong>学习成本</strong></td>
+            <td>⭐⭐ 较低</td>
+            <td>⭐⭐⭐⭐ 中等偏高</td>
+          </tr>
+          <tr>
+            <td><strong>大型项目维护</strong></td>
+            <td>难以维护（类型不明确）</td>
+            <td>✅ 更易维护（代码即文档）</td>
+          </tr>
+          <tr>
+            <td><strong>Vue 3 / React 推荐</strong></td>
+            <td>可以使用</td>
+            <td>⭐ 官方首选推荐</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 代码示例 ===== -->
+  <div id="code" class="section">
+    <div class="section-title">代码对比示例</div>
+    <div class="code-grid">
+
+      <!-- 示例1: 类型安全 -->
+      <div class="code-card">
+        <div class="code-card-header">
+          <div class="dot" style="background:#f7df1e"></div>
+          <div class="dot" style="background:#3178c6"></div>
+          <span class="title">① 类型安全</span>
+          <span class="subtitle">最核心的区别</span>
+        </div>
+        <div class="code-pair">
+          <div class="code-col">
+            <div class="code-col-label js-label">JavaScript ❌</div>
+<pre><span class="kw">function</span> <span class="fn">add</span>(a, b) {
+  <span class="kw">return</span> a + b;
+}
+
+<span class="fn">add</span>(<span class="num">1</span>, <span class="str">"2"</span>);
+<span class="cmt">// 返回 "12"（字符串拼接）</span>
+<span class="cmt">// 运行时才发现，无任何警告</span></pre>
+          </div>
+          <div class="code-col">
+            <div class="code-col-label ts-label">TypeScript ✅</div>
+<pre><span class="kw">function</span> <span class="fn">add</span>(
+  a: <span class="typ">number</span>,
+  b: <span class="typ">number</span>
+): <span class="typ">number</span> {
+  <span class="kw">return</span> a + b;
+}
+
+<span class="fn">add</span>(<span class="num">1</span>, <span class="str">"2"</span>);
+<span class="cmt">// 🔴 编译错误！编写时就报警</span></pre>
+          </div>
+        </div>
+        <div class="desc">
+          JS 中 <code>1 + "2"</code> 会进行字符串拼接返回 <code>"12"</code>，
+          TS 在你<strong>写代码的瞬间</strong>就提示你传了错误类型，不等程序运行。
+        </div>
+      </div>
+
+      <!-- 示例2: 接口 -->
+      <div class="code-card">
+        <div class="code-card-header">
+          <div class="dot" style="background:#3178c6"></div>
+          <span class="title">② 接口 Interface</span>
+          <span class="subtitle">TS 独有特性</span>
+        </div>
+        <div class="code-pair">
+          <div class="code-col">
+            <div class="code-col-label js-label">JavaScript</div>
+<pre><span class="cmt">// JS 没有接口，只能靠注释约定</span>
+<span class="cmt">// @param {Object} user</span>
+<span class="cmt">// @param {number} user.id</span>
+<span class="cmt">// @param {string} user.name</span>
+<span class="kw">function</span> <span class="fn">greet</span>(user) {
+  <span class="kw">return</span> <span class="str">`你好, ${user.name}`</span>;
+}
+
+<span class="cmt">// 传错了也不报错</span>
+<span class="fn">greet</span>({ id: <span class="num">1</span>, nome: <span class="str">"李天宇"</span> });
+<span class="cmt">// 返回 "你好, undefined" 😱</span></pre>
+          </div>
+          <div class="code-col">
+            <div class="code-col-label ts-label">TypeScript</div>
+<pre><span class="kw">interface</span> <span class="typ">User</span> {
+  id: <span class="typ">number</span>;
+  name: <span class="typ">string</span>;
+  age?: <span class="typ">number</span>; <span class="cmt">// ? 可选字段</span>
+}
+
+<span class="kw">function</span> <span class="fn">greet</span>(user: <span class="typ">User</span>) {
+  <span class="kw">return</span> <span class="str">`你好, ${user.name}`</span>;
+}
+
+<span class="fn">greet</span>({ id: <span class="num">1</span>, nome: <span class="str">"李天宇"</span> });
+<span class="cmt">// 🔴 错误：没有 name，多了 nome</span></pre>
+          </div>
+        </div>
+        <div class="desc">
+          <strong>Interface 相当于一份合同</strong>，明确规定对象必须有哪些字段，
+          字段类型是什么，哪些是可选的。传错了立刻报警。
+        </div>
+      </div>
+
+      <!-- 示例3: 泛型 -->
+      <div class="code-card">
+        <div class="code-card-header">
+          <div class="dot" style="background:#3178c6"></div>
+          <span class="title">③ 泛型 Generic</span>
+          <span class="subtitle">TS 独有特性</span>
+        </div>
+        <div class="code-pair">
+          <div class="code-col">
+            <div class="code-col-label js-label">JavaScript</div>
+<pre><span class="cmt">// 写通用函数，类型信息丢失</span>
+<span class="kw">function</span> <span class="fn">getFirst</span>(arr) {
+  <span class="kw">return</span> arr[<span class="num">0</span>];
+}
+
+<span class="kw">const</span> n = <span class="fn">getFirst</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]);
+<span class="cmt">// n 的类型？不知道...</span>
+<span class="cmt">// IDE 无法给出精准提示</span>
+
+<span class="kw">const</span> s = <span class="fn">getFirst</span>([<span class="str">"a"</span>, <span class="str">"b"</span>]);
+<span class="cmt">// s 的类型？还是不知道...</span></pre>
+          </div>
+          <div class="code-col">
+            <div class="code-col-label ts-label">TypeScript</div>
+<pre><span class="cmt">// T 是占位符，调用时自动推断</span>
+<span class="kw">function</span> <span class="fn">getFirst</span>&lt;T&gt;(arr: T[]): T {
+  <span class="kw">return</span> arr[<span class="num">0</span>];
+}
+
+<span class="kw">const</span> n = <span class="fn">getFirst</span>([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]);
+<span class="cmt">// ✅ n 的类型是 number</span>
+
+<span class="kw">const</span> s = <span class="fn">getFirst</span>([<span class="str">"a"</span>, <span class="str">"b"</span>]);
+<span class="cmt">// ✅ s 的类型是 string</span></pre>
+          </div>
+        </div>
+        <div class="desc">
+          <strong>泛型让函数既通用又类型安全</strong>。
+          <code>&lt;T&gt;</code> 是一个「类型占位符」，调用时自动推断出实际类型，
+          IDE 的补全提示也更精准。
+        </div>
+      </div>
+
+      <!-- 示例4: 枚举 -->
+      <div class="code-card">
+        <div class="code-card-header">
+          <div class="dot" style="background:#3178c6"></div>
+          <span class="title">④ 枚举 Enum</span>
+          <span class="subtitle">TS 独有特性</span>
+        </div>
+        <div class="code-pair">
+          <div class="code-col">
+            <div class="code-col-label js-label">JavaScript</div>
+<pre><span class="cmt">// 只能用常量模拟，易写错</span>
+<span class="kw">const</span> STATUS = {
+  PENDING: <span class="str">"pending"</span>,
+  SUCCESS: <span class="str">"success"</span>,
+  ERROR:   <span class="str">"error"</span>
+};
+
+<span class="kw">function</span> <span class="fn">handle</span>(s) {
+  <span class="kw">if</span> (s === <span class="str">"succes"</span>) { <span class="cmt">// 拼写错了！</span>
+    <span class="cmt">// 不会报错，静默 bug</span>
+  }
+}</pre>
+          </div>
+          <div class="code-col">
+            <div class="code-col-label ts-label">TypeScript</div>
+<pre><span class="kw">enum</span> <span class="typ">Status</span> {
+  Pending = <span class="str">"pending"</span>,
+  Success = <span class="str">"success"</span>,
+  Error   = <span class="str">"error"</span>
+}
+
+<span class="kw">function</span> <span class="fn">handle</span>(s: <span class="typ">Status</span>) {
+  <span class="kw">if</span> (s === <span class="typ">Status</span>.Succes) {
+    <span class="cmt">// 🔴 属性不存在，立刻报错</span>
+  }
+}</pre>
+          </div>
+        </div>
+        <div class="desc">
+          用枚举管理状态码、方向、权限等「有限集合」，
+          <strong>杜绝字符串拼写错误</strong>，IDE 还能自动补全枚举项。
+        </div>
+      </div>
+
+      <!-- 示例5: Class 访问修饰符 -->
+      <div class="code-card">
+        <div class="code-card-header">
+          <div class="dot" style="background:#f7df1e"></div>
+          <div class="dot" style="background:#3178c6"></div>
+          <span class="title">⑤ Class 访问修饰符</span>
+          <span class="subtitle">TS 对 Class 的增强</span>
+        </div>
+        <div class="code-pair">
+          <div class="code-col">
+            <div class="code-col-label js-label">JavaScript</div>
+<pre><span class="kw">class</span> <span class="typ">Person</span> {
+  constructor(name, age) {
+    <span class="kw">this</span>.name = name;
+    <span class="kw">this</span>.age  = age;
+    <span class="kw">this</span>._secret = <span class="str">"xyz"</span>;
+    <span class="cmt">// _ 前缀只是"约定"私有</span>
+  }
+}
+
+<span class="kw">const</span> p = <span class="kw">new</span> <span class="typ">Person</span>(<span class="str">"小明"</span>, <span class="num">20</span>);
+console.log(p._secret); <span class="cmt">// 依然能访问！</span></pre>
+          </div>
+          <div class="code-col">
+            <div class="code-col-label ts-label">TypeScript</div>
+<pre><span class="kw">class</span> <span class="typ">Person</span> {
+  <span class="kw">public</span>  name: <span class="typ">string</span>;
+  <span class="kw">private</span> age:  <span class="typ">number</span>;
+  <span class="kw">readonly</span> id:  <span class="typ">number</span>;
+
+  constructor(name: <span class="typ">string</span>, age: <span class="typ">number</span>) {
+    <span class="kw">this</span>.name = name;
+    <span class="kw">this</span>.age  = age;
+    <span class="kw">this</span>.id   = Date.now();
+  }
+}
+<span class="kw">const</span> p = <span class="kw">new</span> <span class="typ">Person</span>(<span class="str">"小明"</span>, <span class="num">20</span>);
+p.age = <span class="num">30</span>; <span class="cmt">// 🔴 private，不可访问</span></pre>
+          </div>
+        </div>
+        <div class="desc">
+          TS 为 Class 新增 <strong>public / private / protected / readonly</strong> 修饰符，
+          真正实现封装，防止外部代码随意修改内部属性。
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== 关系结构 ===== -->
+  <div id="relation" class="section">
+    <div class="section-title">TS 与 JS 的关系</div>
+
+    <div class="diagram-wrap">
+      <div class="diagram">
+        <div class="ring ring-ts">
+          <div style="margin-top:-80px; color:#7eb8f7; font-size:0.8rem; text-align:center; padding:0 30px;">
+            类型注解 · Interface · Enum · Generic<br>访问修饰符 · 装饰器 · 类型别名
+          </div>
+        </div>
+        <div class="ring ring-js">
+          <div class="ring-label" style="color:#f7df1e">JavaScript</div>
+          <div class="ring-sub">变量 · 函数 · 类<br>异步 · DOM 操作</div>
+        </div>
+        <div style="position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:0.75rem;color:#7eb8f7;">TypeScript (超集)</div>
+      </div>
+    </div>
+
+    <ul class="ts-features">
+      <li>所有 JS 代码都是合法的 TS 代码</li>
+      <li>TS 编译后生成标准 JS</li>
+      <li>可以渐进式迁移（.js → .ts）</li>
+      <li>TS 类型信息只在编译阶段存在</li>
+      <li>运行时 TS 类型完全消失</li>
+      <li>支持最新 ES 特性提前使用</li>
+    </ul>
+
+    <div class="section-title" style="margin-top:36px;">TS 编译工作流</div>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="icon">📝</div>
+        <div class="name">.ts 文件</div>
+        <div class="note">你写的代码</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="icon">🔍</div>
+        <div class="name">类型检查</div>
+        <div class="note">tsc 编译器</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="icon">⚙️</div>
+        <div class="name">代码转换</div>
+        <div class="note">移除类型注解</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="icon">📦</div>
+        <div class="name">.js 文件</div>
+        <div class="note">浏览器可运行</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="icon">🌐</div>
+        <div class="name">运行</div>
+        <div class="note">Node / 浏览器</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 选型指南 ===== -->
+  <div id="when" class="section">
+    <div class="section-title">什么时候用哪个？</div>
+    <div class="use-grid">
+      <div class="use-card use-card-js">
+        <h3><span class="badge badge-js" style="width:36px;height:36px;font-size:0.9rem;border-radius:8px;">JS</span> 选 JavaScript</h3>
+        <ul>
+          <li><span class="icon-js">⚡</span> 小型项目、快速原型</li>
+          <li><span class="icon-js">📚</span> 初学前端基础阶段</li>
+          <li><span class="icon-js">🧪</span> 简单的脚本和工具</li>
+          <li><span class="icon-js">⏱</span> 快速验证想法</li>
+          <li><span class="icon-js">👤</span> 个人独立开发项目</li>
+          <li><span class="icon-js">🎓</span> 练习算法和基础逻辑</li>
+        </ul>
+      </div>
+      <div class="use-card use-card-ts">
+        <h3><span class="badge badge-ts" style="width:36px;height:36px;font-size:0.9rem;border-radius:8px;">TS</span> 选 TypeScript</h3>
+        <ul>
+          <li><span class="icon-ts">🏢</span> 大型团队协作项目</li>
+          <li><span class="icon-ts">🔄</span> 长期维护的产品</li>
+          <li><span class="icon-ts">⚛️</span> Vue 3 / React 正式项目</li>
+          <li><span class="icon-ts">🛡</span> 需要高可靠性的业务代码</li>
+          <li><span class="icon-ts">📖</span> 代码即文档，便于协作</li>
+          <li><span class="icon-ts">🤖</span> 想要强力 IDE 智能提示</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:36px;">主流框架的推荐度</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>框架</th>
+            <th>JS 支持</th>
+            <th>TS 支持</th>
+            <th>官方推荐</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>⚡ Vue 3</td>
+            <td>✅ 完全支持</td>
+            <td>✅ 完全支持</td>
+            <td><span class="tag-ts">优先 TypeScript</span></td>
+          </tr>
+          <tr>
+            <td>⚛️ React 18+</td>
+            <td>✅ 完全支持</td>
+            <td>✅ 完全支持</td>
+            <td><span class="tag-ts">优先 TypeScript</span></td>
+          </tr>
+          <tr>
+            <td>🅰️ Angular</td>
+            <td>⚠️ 部分支持</td>
+            <td>✅ 完全支持</td>
+            <td><span class="tag-ts">强制 TypeScript</span></td>
+          </tr>
+          <tr>
+            <td>🟢 Node.js</td>
+            <td>✅ 原生</td>
+            <td>✅ 需配置</td>
+            <td><span class="tag-both">均可</span></td>
+          </tr>
+          <tr>
+            <td>🔷 NestJS</td>
+            <td>⚠️ 不推荐</td>
+            <td>✅ 完全支持</td>
+            <td><span class="tag-ts">强制 TypeScript</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 学习建议 ===== -->
+  <div id="tips" class="section">
+    <div class="section-title">给你的学习路线建议</div>
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-icon">🥚</div>
+        <h4>第一阶段：打好 JS 基础</h4>
+        <p>先把 JavaScript 核心概念学扎实：变量、函数、数组、对象、ES6+ 语法（箭头函数、解构、Promise），以及 DOM 操作。</p>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🌱</div>
+        <h4>第二阶段：Vue 3 + JS 起步</h4>
+        <p>用 JavaScript 跑通 Vue 3 的基础功能（响应式、组件、路由），不要一开始就引入 TS 增加复杂度。</p>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🚀</div>
+        <h4>第三阶段：切换到 TS</h4>
+        <p>Vue 基础打牢后，在项目中用 <code>&lt;script setup lang="ts"&gt;</code>，体验类型推断和智能提示的强大。TS 就是加了类型的 JS，迁移很自然。</p>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🎯</div>
+        <h4>记住核心原则</h4>
+        <p>TS 是 JS 的<strong>超集</strong>，所有 JS 知识在 TS 里都适用。学好 JS → TS 是水到渠成，反过来学会很吃力。</p>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">⚡</div>
+        <h4>快速上手 TS 的技巧</h4>
+        <p>把现有 .js 文件改成 .ts，让编译器告诉你哪里有问题。逐个修复类型错误，这是最高效的 TS 入门方式。</p>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">📦</div>
+        <h4>用 Vite 快速搭建环境</h4>
+        <p>用 <code>npm create vite@latest</code> 选 Vue + TypeScript 模板，Vite 已配置好 TS 编译，无需手动配置，直接开写。</p>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:36px;">快速参考：TS 核心语法</div>
+    <div class="code-card">
+      <div class="code-card-header">
+        <div class="dot" style="background:#3178c6"></div>
+        <span class="title">TS 常用类型注解速查</span>
+      </div>
+<pre style="padding:24px 28px;">
+<span class="cmt">// ===== 基础类型 =====</span>
+<span class="kw">let</span> name:    <span class="typ">string</span>   = <span class="str">"黎俊杰"</span>;
+<span class="kw">let</span> age:     <span class="typ">number</span>   = <span class="num">20</span>;
+<span class="kw">let</span> isDone:  <span class="typ">boolean</span>  = <span class="kw">true</span>;
+<span class="kw">let</span> nothing: <span class="typ">null</span>    = <span class="kw">null</span>;
+<span class="kw">let</span> undef:   <span class="typ">undefined</span>;
+
+<span class="cmt">// ===== 数组 =====</span>
+<span class="kw">let</span> nums: <span class="typ">number</span>[]      = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+<span class="kw">let</span> strs: <span class="typ">Array</span>&lt;<span class="typ">string</span>&gt; = [<span class="str">"a"</span>, <span class="str">"b"</span>];
+
+<span class="cmt">// ===== 联合类型（或）=====</span>
+<span class="kw">let</span> id: <span class="typ">number</span> | <span class="typ">string</span> = <span class="num">42</span>;  <span class="cmt">// 数字或字符串都行</span>
+
+<span class="cmt">// ===== 类型别名 =====</span>
+<span class="kw">type</span> <span class="typ">Point</span> = { x: <span class="typ">number</span>; y: <span class="typ">number</span> };
+
+<span class="cmt">// ===== 函数 =====</span>
+<span class="kw">const</span> <span class="fn">greet</span> = (name: <span class="typ">string</span>): <span class="typ">string</span> => {
+  <span class="kw">return</span> <span class="str">`你好 ${name}`</span>;
+};
+
+<span class="cmt">// ===== Vue 3 组合式 API 中的 TS =====</span>
+<span class="kw">import</span> { ref, computed } <span class="kw">from</span> <span class="str">"vue"</span>;
+
+<span class="kw">const</span> count = ref&lt;<span class="typ">number</span>&gt;(<span class="num">0</span>);   <span class="cmt">// 明确泛型类型</span>
+<span class="kw">const</span> double = computed(() => count.value * <span class="num">2</span>);
+</pre>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  JavaScript vs TypeScript · 前端学习参考指南 · 2026
+</div>
+
+<script>
+  function switchTab(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+</body>
+</html>
